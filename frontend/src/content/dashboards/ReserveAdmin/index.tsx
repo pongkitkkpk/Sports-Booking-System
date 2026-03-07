@@ -1,0 +1,77 @@
+import Footer from "../../../components/Footer";
+import PageTitleWrapper from "../../../components/PageTitleWrapper";
+import { Helmet } from "react-helmet-async";
+
+import SessionsByTime from "./SessionsByTime";
+import CourtCard from "./components/CourtCard";
+import { Grid, Typography, Box } from "@mui/material";
+
+import { courtData } from "./courtData";
+
+function DashboardReserve() {
+  const courts = Object.entries(courtData);
+
+  return (
+    <>
+      <Helmet>
+        <title>KMUTNB Court Admin Booking</title>
+      </Helmet>
+
+      <PageTitleWrapper>{/* <PageHeader /> */}</PageTitleWrapper>
+
+      <Grid
+        sx={{ px: 4 }}
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="stretch"
+        spacing={4}
+      >
+        {/* ซ้าย: การ์ดสนาม */}
+        <Grid item lg={8} md={6} xs={12}>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h4" gutterBottom>
+              🏟 ระบบปิดสนามกีฬา KMUTNB
+            </Typography>
+            <Typography variant="body1">
+              กรุณาเลือกสนามกีฬาที่คุณต้องการปิดปรับปรุง จากตัวเลือกด้านล่าง
+            </Typography>
+          </Box>
+
+          <Grid
+            container
+            spacing={4}
+            direction="row"
+            justifyContent="center"
+            alignItems="stretch"
+          >
+            {courts.map(([key, info]) => (
+              <Grid item sm={6} xs={12} key={key}>
+                <CourtCard
+                  title={info.name}
+                  description={info.description}
+                  imageUrl={info.imageUrl}
+                  routeSuffix={key}
+                  id={info.id}
+                />
+              </Grid>
+            ))}
+            {/* gym only */}
+          </Grid>
+        </Grid>
+
+        {/* ขวา: สรุปความหนาแน่น */}
+        <Grid item lg={4} md={6} xs={12}>
+          <SessionsByTime />
+        </Grid>
+
+        {/* ช่องว่างเผื่อขยาย */}
+        <Grid item lg={4} md={6} xs={12}></Grid>
+      </Grid>
+
+      <Footer />
+    </>
+  );
+}
+
+export default DashboardReserve;

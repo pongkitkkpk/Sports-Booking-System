@@ -1,0 +1,53 @@
+📁 สรุปไฟล์ทั้งหมดและหน้าที่
+1. DashboardReserve.tsx
+
+📍 Path: src/content/dashboards/Reserve/index.tsx หรือ DashboardReserve.tsx
+
+รายละเอียด
+✅ หน้า “รวมสนามกีฬา” ที่แสดงเป็น Card ให้ผู้ใช้เลือกสนาม
+✅ ใช้ CourtCard แสดงชื่อ, รูป, คำอธิบายของแต่ละสนาม
+✅ เมื่อคลิกที่ Card → จะพาไปหน้า /dashboards/reserve/:courtType
+2. CourtCard.tsx
+
+📍 Path: src/content/dashboards/Reserve/components/CourtCard.tsx
+
+รายละเอียด
+✅ Card แบบ reusable สำหรับแสดงสนามกีฬา 1 สนาม
+✅ รับ props เช่น title, imageUrl, routeSuffix
+✅ คลิกแล้วจะ navigate ไปยัง path ที่ dynamic เช่น /extended-sidebar/dashboards/reserve/futsal
+✅ ใช้ useLocation() ดึง layout prefix (/extended-sidebar) อัตโนมัติ
+3. ReserveDetail.tsx
+
+📍 Path: src/content/dashboards/Reserve/ReserveDetail.tsx
+
+รายละเอียด
+✅ หน้าแสดงรายละเอียดของสนามกีฬาแต่ละประเภท (เช่น ฟุตซอล, แบดมินตัน)
+✅ อ่าน :courtType จาก URL ด้วย useParams()
+✅ ดึงข้อมูลสนามจาก courtData.ts
+✅ ส่งข้อมูลไปยัง ReserveForm เพื่อแสดงรายละเอียด/ตารางจอง
+4. courtData.ts
+
+📍 Path: src/content/dashboards/Reserve/courtData.ts
+
+รายละเอียด
+✅ เก็บข้อมูลของสนามแต่ละประเภทในรูปแบบ object (เช่น futsal, badminton)
+✅ ใช้เป็นแหล่งข้อมูลกลางให้ ReserveDetail.tsx
+✅ เพิ่มสนามใหม่ง่าย ๆ แค่เพิ่ม key ใน object นี้
+5. ReserveForm.tsx
+
+📍 Path: src/content/dashboards/Reserve/components/ReserveForm.tsx
+
+รายละเอียด
+✅ แสดงฟอร์มจองสนาม + ตารางเวลาที่เปิดให้จอง
+✅ ใช้ข้อมูลสนาม (name, image, description) ที่ถูกส่งมาจาก ReserveDetail.tsx
+✅ มีปุ่ม "จอง" สำหรับแต่ละ time slot
+🔜 สามารถเพิ่ม modal, ตรวจสอบเวลา, เชื่อมกับ backend ได้ในอนาคต
+
+
+court
+ใช้ชื่อสนาม Court xxx
+ในการแบ่งตารางและสนามออกจากกัน
+ID 3 แบด1
+ID 4 แบด2 
+ID 5 แบด3
+ID 6 แบด4
