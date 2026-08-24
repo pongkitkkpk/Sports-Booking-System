@@ -5,11 +5,21 @@ import { Formik } from 'formik';
 import {
   Button,
   FormHelperText,
+  MenuItem,
   TextField,
   CircularProgress
 } from '@mui/material';
 import useAuth from '../../../../hooks/useAuth';
 import useRefMounted from '../../../../hooks/useRefMounted';
+
+// Mirrors the mock users seeded in backend/src/auth/auth.service.ts —
+// there is no self-registration, so picking one here is how a reviewer
+// gets in, the same way DMS_c hands out pre-provisioned test accounts.
+const MOCK_ACCOUNTS = [
+  { label: 'นักศึกษา — student01', username: 'student01', password: '1234' },
+  { label: 'เจ้าหน้าที่ — staff01', username: 'staff01', password: 'abcd' },
+  { label: 'ผู้ดูแลระบบ — admin', username: 'admin', password: 'admin' }
+];
 
 const LoginJWT: FC = () => {
   const { login } = useAuth() as any;
@@ -52,10 +62,33 @@ const LoginJWT: FC = () => {
         handleChange,
         handleSubmit,
         isSubmitting,
+        setFieldValue,
         touched,
         values
       }): JSX.Element => (
         <form noValidate onSubmit={handleSubmit}>
+          <TextField
+            select
+            fullWidth
+            margin="normal"
+            label="บัญชีทดสอบ"
+            value=""
+            onChange={(e) => {
+              const account = MOCK_ACCOUNTS.find(
+                (a) => a.username === e.target.value
+              );
+              if (account) {
+                setFieldValue('username', account.username);
+                setFieldValue('password', account.password);
+              }
+            }}
+          >
+            {MOCK_ACCOUNTS.map((account) => (
+              <MenuItem key={account.username} value={account.username}>
+                {account.label}
+              </MenuItem>
+            ))}
+          </TextField>
           <TextField
             error={Boolean(touched.username && errors.username)}
             fullWidth
