@@ -1,17 +1,11 @@
 import type { ReactNode } from "react";
 
-import AnalyticsTwoToneIcon from "@mui/icons-material/AnalyticsTwoTone";
-import HealthAndSafetyTwoToneIcon from "@mui/icons-material/HealthAndSafetyTwoTone";
-import AssignmentIndTwoToneIcon from "@mui/icons-material/AssignmentIndTwoTone";
-import AccountTreeTwoToneIcon from "@mui/icons-material/AccountTreeTwoTone";
-import StorefrontTwoToneIcon from "@mui/icons-material/StorefrontTwoTone";
-import VpnKeyTwoToneIcon from "@mui/icons-material/VpnKeyTwoTone";
-import ErrorTwoToneIcon from "@mui/icons-material/ErrorTwoTone";
-import DesignServicesTwoToneIcon from "@mui/icons-material/DesignServicesTwoTone";
-import SupportTwoToneIcon from "@mui/icons-material/SupportTwoTone";
-import ReceiptTwoToneIcon from "@mui/icons-material/ReceiptTwoTone";
-import BackupTableTwoToneIcon from "@mui/icons-material/BackupTableTwoTone";
-import SmartToyTwoToneIcon from "@mui/icons-material/SmartToyTwoTone";
+import SportsTwoToneIcon from "@mui/icons-material/SportsTwoTone";
+import EventAvailableTwoToneIcon from "@mui/icons-material/EventAvailableTwoTone";
+import SummarizeTwoToneIcon from "@mui/icons-material/SummarizeTwoTone";
+import VerifiedUserTwoToneIcon from "@mui/icons-material/VerifiedUserTwoTone";
+import BlockTwoToneIcon from "@mui/icons-material/BlockTwoTone";
+import FitnessCenterTwoToneIcon from "@mui/icons-material/FitnessCenterTwoTone";
 
 export interface MenuItem {
   link?: string;
@@ -30,395 +24,37 @@ export interface MenuItems {
 
 const menuItems: MenuItems[] = [
   {
-    heading: "General",
+    heading: "ระบบจองสนามกีฬา KMUTNB",
     items: [
       {
-        name: "Blueprints",
-        icon: BackupTableTwoToneIcon,
-        link: "",
-        items: [
-          {
-            name: "Extended sidebar",
-            link: "/extended-sidebar/dashboards",
-            badge: "v3.0",
-            badgeTooltip: "Added in version 3.1",
-          },
-          {
-            name: "Accent header",
-            link: "/accent-header/dashboards",
-            badge: "",
-            badgeTooltip: "Updated",
-          },
-
-          {
-            name: "Boxed sidebar",
-            link: "/boxed-sidebar/dashboards",
-          },
-          {
-            name: "Collapsed sidebar",
-            link: "/collapsed-sidebar/dashboards",
-          },
-
-          {
-            name: "Top navigation",
-            link: "/top-navigation/dashboards",
-          },
-        ],
+        name: "จองสนาม",
+        icon: SportsTwoToneIcon,
+        link: "/extended-sidebar/dashboards/reserve",
       },
       {
-        name: "Dashboards",
-        icon: SmartToyTwoToneIcon,
-        link: "/extended-sidebar/dashboards",
-        items: [
-          {
-            name: "Reports",
-            link: "dashboards/reports",
-          },
-          {
-            name: "Expenses",
-            link: "dashboards/expenses",
-            badge: "",
-            badgeTooltip: "This is a dot tooltip example",
-          },
-          {
-            name: "Products",
-            link: "dashboards/products",
-          },
-          {
-            name: "Statistics",
-            link: "dashboards/statistics",
-          },
-          {
-            name: "Automation",
-            link: "dashboards/automation",
-          },
-          {
-            name: "Analytics",
-            link: "dashboards/analytics",
-          },
-          {
-            name: "Banking",
-            link: "dashboards/banking",
-          },
-          {
-            name: "Commerce",
-            link: "dashboards/commerce",
-          },
-          {
-            name: "Crypto",
-            link: "dashboards/crypto",
-          },
-          {
-            name: "Finance",
-            link: "dashboards/finance",
-          },
-          {
-            name: "Fitness",
-            link: "dashboards/fitness",
-          },
-          {
-            name: "Healthcare",
-            link: "/extended-sidebar/dashboards/healthcare",
-            items: [
-              {
-                name: "Doctors",
-                link: "dashboards/healthcare/doctor",
-              },
-              {
-                name: "Hospital",
-                link: "dashboards/healthcare/hospital",
-              },
-            ],
-          },
-          {
-            name: "Helpdesk",
-            link: "dashboards/helpdesk",
-          },
-          {
-            name: "Learning",
-            link: "dashboards/learning",
-          },
-          {
-            name: "Monitoring",
-            link: "dashboards/monitoring",
-          },
-          {
-            name: "Tasks",
-            link: "dashboards/tasks",
-          },
-          {
-            name: "จองสนาม",
-            link: "dashboards/reserve",
-          },
-          {
-            name: "สถานะการจอง",
-            link: "dashboards/my-bookings",
-          },
-          {
-            name: "สรุปการจองใช้สนาม (แอดมิน)",
-            link: "dashboards/report-kpis",
-          },
-          {
-            name: "ยืนยันตัวตนและจัดการสิทธิ์ผู้ขอเข้าใช้งานสนาม(แอดมิน)",
-            link: "dashboards/verify-reserve",
-          },
-
-          {
-            name: "การปิดสนาม (แอดมิน)",
-            link: "dashboards/reserve-admin",
-          },
-          {
-            name: "KMUTNB Fitness Center",
-            link: "dashboards/KMUTNB-Fitness-Center",
-          },
-        ],
+        name: "สถานะการจอง",
+        icon: EventAvailableTwoToneIcon,
+        link: "/extended-sidebar/dashboards/my-bookings",
       },
       {
-        name: "Data Display",
-        icon: HealthAndSafetyTwoToneIcon,
-        badge: "",
-        badgeTooltip: "Tokyo contains over 250 data display blocks",
-        link: "/extended-sidebar/blocks",
-        items: [
-          {
-            name: "Charts large",
-            link: "blocks/charts-large",
-          },
-          {
-            name: "Charts small",
-            link: "blocks/charts-small",
-          },
-          {
-            name: "Composed cards",
-            link: "blocks/composed-cards",
-          },
-          {
-            name: "Grids",
-            link: "blocks/grids",
-          },
-          {
-            name: "Icon cards",
-            link: "blocks/icon-cards",
-          },
-          {
-            name: "Image cards",
-            link: "blocks/image-cards",
-          },
-          {
-            name: "Lists large",
-            link: "blocks/lists-large",
-          },
-          {
-            name: "Lists small",
-            link: "blocks/lists-small",
-          },
-          {
-            name: "Navigation",
-            link: "blocks/navigation",
-          },
-          {
-            name: "Profile cards",
-            link: "blocks/profile-cards",
-          },
-          {
-            name: "Progress circular",
-            link: "blocks/progress-circular",
-          },
-          {
-            name: "Progress horizontal",
-            link: "blocks/progress-horizontal",
-          },
-          {
-            name: "Sparklines large",
-            link: "blocks/sparklines-large",
-          },
-          {
-            name: "Sparklines small",
-            link: "blocks/sparklines-small",
-          },
-          {
-            name: "Statistics",
-            link: "blocks/statistics",
-          },
-        ],
+        name: "สรุปการใช้สนาม",
+        icon: SummarizeTwoToneIcon,
+        link: "/extended-sidebar/dashboards/report-kpis",
       },
       {
-        name: "Applications",
-        icon: AnalyticsTwoToneIcon,
-        link: "/extended-sidebar/applications",
-        items: [
-          {
-            name: "Calendar",
-            link: "applications/calendar",
-          },
-          {
-            name: "File Manager",
-            link: "applications/file-manager",
-          },
-          {
-            name: "Jobs Platform",
-            link: "applications/jobs-platform",
-          },
-          {
-            name: "Mailbox",
-            link: "applications/mailbox/inbox",
-          },
-          {
-            name: "Messenger",
-            link: "applications/messenger",
-          },
-          {
-            name: "Projects Board",
-            link: "applications/projects-board",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    heading: "Management",
-    items: [
-      {
-        name: "Users",
-        icon: AssignmentIndTwoToneIcon,
-        link: "/extended-sidebar/management/users",
-        items: [
-          {
-            name: "List",
-            link: "management/users/list",
-          },
-          {
-            name: "User Profile",
-            link: "management/users/single",
-          },
-        ],
+        name: "ยืนยันตัวตน",
+        icon: VerifiedUserTwoToneIcon,
+        link: "/extended-sidebar/dashboards/verify-reserve",
       },
       {
-        name: "Projects",
-        icon: AccountTreeTwoToneIcon,
-        link: "/extended-sidebar/management/projects/list",
+        name: "การปิดสนาม",
+        icon: BlockTwoToneIcon,
+        link: "/extended-sidebar/dashboards/reserve-admin",
       },
       {
-        name: "Commerce",
-        icon: StorefrontTwoToneIcon,
-        link: "/extended-sidebar/management/commerce",
-        items: [
-          {
-            name: "Shop",
-            link: "management/commerce/shop",
-          },
-          {
-            name: "List",
-            link: "management/commerce/products/list",
-          },
-          {
-            name: "Details",
-            link: "management/commerce/products/single/1",
-          },
-          {
-            name: "Create",
-            link: "management/commerce/products/create",
-          },
-        ],
-      },
-      {
-        name: "Invoices",
-        icon: ReceiptTwoToneIcon,
-        link: "/extended-sidebar/management/invoices",
-        items: [
-          {
-            name: "List",
-            link: "management/invoices/list",
-          },
-          {
-            name: "Details",
-            link: "management/invoices/single",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    heading: "Extra Pages",
-    items: [
-      {
-        name: "Auth Pages",
-        icon: VpnKeyTwoToneIcon,
-        link: "/auth",
-        items: [
-          {
-            name: "Login",
-            items: [
-              {
-                name: "Basic",
-                link: "/account/login-basic",
-              },
-              {
-                name: "Cover",
-                link: "/account/login-cover",
-              },
-            ],
-          },
-          {
-            name: "Register",
-            items: [
-              {
-                name: "Basic",
-                link: "/account/register-basic",
-              },
-              {
-                name: "Cover",
-                link: "/account/register-cover",
-              },
-              {
-                name: "Wizard",
-                link: "/account/register-wizard",
-              },
-            ],
-          },
-          {
-            name: "Recover Password",
-            link: "/account/recover-password",
-          },
-        ],
-      },
-      {
-        name: "Status",
-        icon: ErrorTwoToneIcon,
-        link: "/status",
-        items: [
-          {
-            name: "Error 404",
-            link: "/status/404",
-          },
-          {
-            name: "Error 500",
-            link: "/status/500",
-          },
-          {
-            name: "Maintenance",
-            link: "/status/maintenance",
-          },
-          {
-            name: "Coming Soon",
-            link: "/status/coming-soon",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    heading: "Foundation",
-    items: [
-      {
-        name: "Overview",
-        link: "/overview",
-        icon: DesignServicesTwoToneIcon,
-      },
-      {
-        name: "Documentation",
-        icon: SupportTwoToneIcon,
-        link: "/docs",
+        name: "KMUTNB Fitness Center",
+        icon: FitnessCenterTwoToneIcon,
+        link: "/extended-sidebar/dashboards/KMUTNB-Fitness-Center",
       },
     ],
   },

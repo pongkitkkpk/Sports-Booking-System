@@ -32,13 +32,30 @@ function DashboardReserve() {
       >
         {/* ซ้าย: การ์ดสนาม */}
         <Grid item lg={8} md={6} xs={12}>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="h4" gutterBottom>
-              🏟 ระบบจองสนามกีฬา KMUTNB
-            </Typography>
-            <Typography variant="body1">
-              กรุณาเลือกสนามกีฬาที่คุณต้องการจอง จากตัวเลือกด้านล่าง
-            </Typography>
+          <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 2 }}>
+            <Box
+              sx={{
+                flex: "none",
+                width: 44,
+                height: 44,
+                borderRadius: 2,
+                display: "grid",
+                placeItems: "center",
+                fontSize: "1.4rem",
+                background: (theme) =>
+                  `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+              }}
+            >
+              🏟
+            </Box>
+            <Box>
+              <Typography variant="h4" sx={{ mb: 0.5 }}>
+                ระบบจองสนามกีฬา KMUTNB
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                กรุณาเลือกสนามกีฬาที่คุณต้องการจอง จากตัวเลือกด้านล่าง
+              </Typography>
+            </Box>
           </Box>
 
           <Grid

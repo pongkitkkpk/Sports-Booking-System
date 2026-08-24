@@ -32,11 +32,11 @@ function CourtCard({
     <Card
       sx={{
         borderRadius: 3,
-        boxShadow: 4,
-        transition: "0.3s",
+        transition: "0.2s ease",
         "&:hover": {
-          boxShadow: 8,
+          boxShadow: "0 4px 14px -4px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.04)",
           transform: "translateY(-2px)",
+          borderColor: "primary.main",
         },
       }}
     >

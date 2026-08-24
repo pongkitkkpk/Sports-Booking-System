@@ -17,7 +17,7 @@ export class Reservation {
   @Column()
   icit: string;
 
-  @Column()
+  @Column({ default: 'pending' })
   approve_status: string;
 
   @ManyToOne(() => BookingStatus, (status) => status.reservations, {

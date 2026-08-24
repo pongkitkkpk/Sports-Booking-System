@@ -1,8 +1,9 @@
 import { FC, ReactNode, createContext, useEffect, useReducer } from 'react';
+import axios from 'axios';
 import { User } from '../models/user';
-import axios from '../utils/axios';
-import { verify, JWT_SECRET } from '../utils/jwt';
 import PropTypes from 'prop-types';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 interface AuthState {
   isInitialized: boolean;
@@ -12,9 +13,8 @@ interface AuthState {
 
 interface AuthContextValue extends AuthState {
   method: 'JWT';
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, name: string, password: string) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -40,14 +40,7 @@ type LogoutAction = {
   type: 'LOGOUT';
 };
 
-type RegisterAction = {
-  type: 'REGISTER';
-  payload: {
-    user: User;
-  };
-};
-
-type Action = InitializeAction | LoginAction | LogoutAction | RegisterAction;
+type Action = InitializeAction | LoginAction | LogoutAction;
 
 const initialAuthState: AuthState = {
   isAuthenticated: false,
@@ -55,13 +48,47 @@ const initialAuthState: AuthState = {
   user: null
 };
 
+// The backend mints a standard JWT (auth/auth.service.ts). This mockup only
+// needs to know who is logged in and whether the session has expired — it
+// never re-verifies the signature client-side, the same way DMS_c's login
+// trusts the token it was handed rather than re-checking it.
+const decodeJwtPayload = (token: string): any => {
+  const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+  return JSON.parse(decodeURIComponent(escape(atob(base64))));
+};
+
+const isTokenValid = (token: string): boolean => {
+  try {
+    const { exp } = decodeJwtPayload(token);
+    return !exp || Date.now() < exp * 1000;
+  } catch {
+    return false;
+  }
+};
+
+const userFromToken = (token: string): User => {
+  const { sub, username, role } = decodeJwtPayload(token);
+  return {
+    id: String(sub),
+    username,
+    name: username,
+    role,
+    avatar: '',
+    email: '',
+    jobtitle: '',
+    location: '',
+    posts: '',
+    coverImg: '',
+    followers: '',
+    description: ''
+  } as User;
+};
+
 const setSession = (accessToken: string | null): void => {
   if (accessToken) {
     localStorage.setItem('accessToken', accessToken);
-    axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
     localStorage.removeItem('accessToken');
-    delete axios.defaults.headers.common.Authorization;
   }
 };
 
@@ -92,16 +119,7 @@ const handlers: Record<
     ...state,
     isAuthenticated: false,
     user: null
-  }),
-  REGISTER: (state: AuthState, action: RegisterAction): AuthState => {
-    const { user } = action.payload;
-
-    return {
-      ...state,
-      isAuthenticated: true,
-      user
-    };
-  }
+  })
 };
 
 const reducer = (state: AuthState, action: Action): AuthState =>
@@ -111,8 +129,7 @@ const AuthContext = createContext<AuthContextValue>({
   ...initialAuthState,
   method: 'JWT',
   login: () => Promise.resolve(),
-  logout: () => Promise.resolve(),
-  register: () => Promise.resolve()
+  logout: () => Promise.resolve()
 });
 
 export const AuthProvider: FC<AuthProviderProps> = (props) => {
@@ -120,36 +137,19 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
 
   useEffect(() => {
-    const initialize = async (): Promise<void> => {
-      try {
-        const accessToken = window.localStorage.getItem('accessToken');
+    const initialize = (): void => {
+      const accessToken = window.localStorage.getItem('accessToken');
 
-        if (accessToken && verify(accessToken, JWT_SECRET)) {
-          setSession(accessToken);
-
-          const response = await axios.get<{ user: User }>(
-            '/api/account/personal'
-          );
-          const { user } = response.data;
-
-          dispatch({
-            type: 'INITIALIZE',
-            payload: {
-              isAuthenticated: true,
-              user
-            }
-          });
-        } else {
-          dispatch({
-            type: 'INITIALIZE',
-            payload: {
-              isAuthenticated: false,
-              user: null
-            }
-          });
-        }
-      } catch (err) {
-        console.error(err);
+      if (accessToken && isTokenValid(accessToken)) {
+        dispatch({
+          type: 'INITIALIZE',
+          payload: {
+            isAuthenticated: true,
+            user: userFromToken(accessToken)
+          }
+        });
+      } else {
+        setSession(null);
         dispatch({
           type: 'INITIALIZE',
           payload: {
@@ -163,52 +163,31 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     initialize();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
-    const response = await axios.post<{ accessToken: string; user: User }>(
-      '/api/account/login',
-      {
-        email,
-        password
-      }
-    );
-    const { accessToken, user } = response.data;
+  const login = async (username: string, password: string): Promise<void> => {
+    try {
+      const response = await axios.post<{ access_token: string }>(
+        `${API_BASE}/api/auth/login`,
+        { username, password }
+      );
+      const { access_token } = response.data;
 
-    setSession(accessToken);
-    dispatch({
-      type: 'LOGIN',
-      payload: {
-        user
-      }
-    });
+      setSession(access_token);
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user: userFromToken(access_token)
+        }
+      });
+    } catch (err: any) {
+      throw new Error(
+        err.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ'
+      );
+    }
   };
 
   const logout = async (): Promise<void> => {
     setSession(null);
     dispatch({ type: 'LOGOUT' });
-  };
-
-  const register = async (
-    email: string,
-    name: string,
-    password: string
-  ): Promise<void> => {
-    const response = await axios.post<{ accessToken: string; user: User }>(
-      '/api/account/register',
-      {
-        email,
-        name,
-        password
-      }
-    );
-    const { accessToken, user } = response.data;
-
-    window.localStorage.setItem('accessToken', accessToken);
-    dispatch({
-      type: 'REGISTER',
-      payload: {
-        user
-      }
-    });
   };
 
   return (
@@ -217,8 +196,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         ...state,
         method: 'JWT',
         login,
-        logout,
-        register
+        logout
       }}
     >
       {children}
