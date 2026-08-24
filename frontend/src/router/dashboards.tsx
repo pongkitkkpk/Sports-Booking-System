@@ -46,9 +46,6 @@ const ReserveDetail = Loader(
 const ReserveInfoForm = Loader(
   lazy(() => import("../content/dashboards/Reserve/ReserveInfoForm"))
 );
-const ReserveThemeLayout = Loader(
-  lazy(() => import("../content/dashboards/Reserve/ReserveThemeLayout"))
-);
 
 const ReservationStatusPage = Loader(
   lazy(() => import("../content/dashboards/ReservationStatus"))
@@ -70,9 +67,6 @@ const ReserveAdminDetail = Loader(
 );
 const ReserveAdminInfoForm = Loader(
   lazy(() => import("../content/dashboards/ReserveAdmin/ReserveAdminInfoForm"))
-);
-const ReserveAdminThemeLayout = Loader(
-  lazy(() => import("../content/dashboards/ReserveAdmin/ReserveAdminThemeLayout"))
 );
 
 const dashboardsRoutes = [
@@ -159,7 +153,6 @@ const dashboardsRoutes = [
   },
   {
     path: "reserve",
-    element: <ReserveThemeLayout />, // ธีมสีอิฐ KMUTNB (ยืมมาจาก DMS_c) เฉพาะโซนจองสนาม
     children: [
       {
         path: "",
@@ -194,7 +187,6 @@ const dashboardsRoutes = [
   },
   {
     path: "reserve-admin",
-    element: <ReserveAdminThemeLayout />, // ธีมสีอิฐ KMUTNB เหมือนโซนจองสนาม
     children: [
       {
         path: "",

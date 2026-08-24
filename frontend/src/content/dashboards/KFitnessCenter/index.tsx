@@ -13,7 +13,7 @@ function DashboardHybrid() {
   return (
     <>
       <Helmet>
-        <title>Verify Admin Dashboard</title>
+        <title>KMUTNB Fitness Center</title>
       </Helmet>
       <PageTitleWrapper>
         <PageHeader />

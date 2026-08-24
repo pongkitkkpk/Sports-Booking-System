@@ -1,15 +1,27 @@
 import { useParams } from "react-router-dom";
+import { Box, Typography } from "@mui/material";
 import { courtData } from "./courtData";
 import ReserveForm from "./components/ReserveForm";
 import ReserveGymForm from "./components/ReserveGymForm";
-import { Coronavirus } from "@mui/icons-material";
 
 function ReserveDetail() {
   const { courtType } = useParams<{ courtType: string }>();
   const court = courtData[courtType ?? ""];
 
   if (!court) {
-    return <h2>❌ ไม่พบสนามที่คุณเลือก</h2>;
+    return (
+      <Box sx={{ textAlign: "center", py: 10 }}>
+        <Typography variant="h2" sx={{ mb: 1 }}>
+          ❌
+        </Typography>
+        <Typography variant="h4" gutterBottom>
+          ไม่พบสนามที่คุณเลือก
+        </Typography>
+        <Typography color="text.secondary">
+          กรุณาย้อนกลับไปเลือกสนามอีกครั้ง
+        </Typography>
+      </Box>
+    );
   }
 
   // if (courtType === "gym") {

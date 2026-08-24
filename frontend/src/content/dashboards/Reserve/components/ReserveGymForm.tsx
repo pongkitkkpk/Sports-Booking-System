@@ -1,10 +1,10 @@
 import {
   Box,
   Button,
+  Card,
   Checkbox,
   Chip,
   Grid,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -48,8 +48,7 @@ type SlotStatus =
   | "block-grad";
 
 const BodyCell = styled(TableCell)(({ theme }) => ({
-  borderRight: `1px solid ${theme.palette.grey[200]}`,
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  borderRight: `1px solid ${theme.palette.divider}`,
   textAlign: "center",
   padding: theme.spacing(0.5),
 }));
@@ -57,7 +56,7 @@ const BodyCell = styled(TableCell)(({ theme }) => ({
 const CourtCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 600,
   whiteSpace: "nowrap",
-  borderRight: `1px solid ${theme.palette.grey[200]}`,
+  borderRight: `1px solid ${theme.palette.divider}`,
 }));
 
 const STATUS_STYLE: Record<
@@ -113,10 +112,9 @@ function CellContent({
 
 const HeadCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    background: theme.palette.grey[100],
     fontWeight: 600,
     textAlign: "center",
-    borderRight: `1px solid ${theme.palette.grey[200]}`,
+    borderRight: `1px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -370,10 +368,33 @@ function ReserveGymForm({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          🏟 {courtInfo.name} — ตารางจอง ({selectedDate.format("DD MMM YYYY")})
-        </Typography>
+      <Box sx={{ p: { xs: 2.5, sm: 4 } }}>
+        <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              flex: "none",
+              width: 44,
+              height: 44,
+              borderRadius: 2,
+              display: "grid",
+              placeItems: "center",
+              fontSize: "1.4rem",
+              background: (theme) =>
+                `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+            }}
+          >
+            🏟
+          </Box>
+          <Box>
+            <Typography variant="h4">
+              {courtInfo.name} — ตารางจอง ({selectedDate.format("DD MMM YYYY")})
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {courtInfo.description}
+            </Typography>
+          </Box>
+        </Box>
+
         <DatePicker
           label="เลือกวันที่"
           value={selectedDate}
@@ -389,13 +410,10 @@ function ReserveGymForm({
             <TextField {...params} size="small" sx={{ mb: 2 }} />
           )}
         />
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {courtInfo.description}
-        </Typography>
 
         <TableContainer
-          component={Paper}
-          sx={{ borderRadius: 2, overflow: "auto" }}
+          component={Card}
+          sx={{ overflow: "auto" }}
         >
           <Table size="small" stickyHeader>
             <TableHead>
@@ -426,39 +444,23 @@ function ReserveGymForm({
             </Typography>
           </Grid>
           <Grid item xs={12} md="auto">
-            <Chip
-              label="reserved"
-              sx={{ bgcolor: "#e53935", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="teaching"
-              sx={{ bgcolor: "#43a047", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="event"
-              sx={{ bgcolor: "#1e88e5", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="maintenance"
-              sx={{ bgcolor: "#ffb300", color: "#333", mr: 1 }}
-            />
-            <Chip
-              label="closed"
-              sx={{ bgcolor: "#9e9e9e", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="aaa"
-              sx={{ bgcolor: "#c62828", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="ช.บุคลากร"
-              sx={{ bgcolor: "#8e24aa", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="กศ."
-              sx={{ bgcolor: "#1565c0", color: "#fff", mr: 1 }}
-            />
-            <Chip label="ว่าง (เช็คบ็อกซ์)" variant="outlined" />
+            <Box display="flex" flexWrap="wrap" gap={1}>
+              <Chip label="reserved" sx={{ bgcolor: "#e53935", color: "#fff" }} />
+              <Chip label="teaching" sx={{ bgcolor: "#43a047", color: "#fff" }} />
+              <Chip label="event" sx={{ bgcolor: "#1e88e5", color: "#fff" }} />
+              <Chip
+                label="maintenance"
+                sx={{ bgcolor: "#ffb300", color: "#333" }}
+              />
+              <Chip label="closed" sx={{ bgcolor: "#9e9e9e", color: "#fff" }} />
+              <Chip label="aaa" sx={{ bgcolor: "#c62828", color: "#fff" }} />
+              <Chip
+                label="ช.บุคลากร"
+                sx={{ bgcolor: "#8e24aa", color: "#fff" }}
+              />
+              <Chip label="กศ." sx={{ bgcolor: "#1565c0", color: "#fff" }} />
+              <Chip label="ว่าง (เช็คบ็อกซ์)" variant="outlined" />
+            </Box>
           </Grid>
 
           <Grid item xs />

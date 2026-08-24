@@ -1,4 +1,4 @@
-import { Box, Card, Link, Typography, styled } from '@mui/material';
+import { Box, Card, Typography, styled } from '@mui/material';
 
 const FooterWrapper = styled(Card)(
   ({ theme }) => `
@@ -15,27 +15,10 @@ function Footer() {
         display={{ xs: 'block', md: 'flex' }}
         alignItems="center"
         textAlign={{ xs: 'center', md: 'left' }}
-        justifyContent="space-between"
+        justifyContent="center"
       >
-        <Box>
-          <Typography variant="subtitle1">
-            &copy; 2023 - React Typescript Admin Dashboard
-          </Typography>
-        </Box>
-        <Typography
-          sx={{
-            pt: { xs: 2, md: 0 }
-          }}
-          variant="subtitle1"
-        >
-          Optimize by{' '}
-          <Link
-            href="https://google.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Hello World
-          </Link>
+        <Typography variant="subtitle1">
+          &copy; {new Date().getFullYear()} ระบบจองสนามกีฬา มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ (KMUTNB)
         </Typography>
       </Box>
     </FooterWrapper>

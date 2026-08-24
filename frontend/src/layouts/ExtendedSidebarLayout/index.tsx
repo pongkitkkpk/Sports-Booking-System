@@ -1,7 +1,8 @@
-import { FC, ReactNode } from 'react';
-import { Box, alpha, lighten, useTheme } from '@mui/material';
+import { FC, ReactNode, useMemo } from 'react';
+import { Box, ThemeProvider, alpha, lighten, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 // import ThemeSettings from '../../components/ThemeSettings';
+import { createKmutnbTheme } from '../../theme/kmutnbTheme';
 
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -10,11 +11,17 @@ interface ExtendedSidebarLayoutProps {
   children?: ReactNode;
 }
 
+// This is the one layout the real app uses (the other four — boxed-sidebar,
+// collapsed-sidebar, top-navigation, accent-header — are unused template
+// leftovers), so the KMUTNB brand theme is applied here at the root: header,
+// sidebar and every routed page all share it, rather than each page opting
+// in separately.
 const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
-  const theme = useTheme();
+  const baseTheme = useTheme();
+  const theme = useMemo(() => createKmutnbTheme(baseTheme), [baseTheme]);
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Box
         sx={{
           flex: 1,
@@ -62,7 +69,7 @@ const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
           {/* <ThemeSettings /> */}
         </Box>
       </Box>
-    </>
+    </ThemeProvider>
   );
 };
 

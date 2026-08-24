@@ -66,6 +66,12 @@ const isTokenValid = (token: string): boolean => {
   }
 };
 
+const ROLE_LABEL: Record<string, string> = {
+  student: 'นักศึกษา',
+  staff: 'เจ้าหน้าที่',
+  admin: 'ผู้ดูแลระบบ'
+};
+
 const userFromToken = (token: string): User => {
   const { sub, username, role } = decodeJwtPayload(token);
   return {
@@ -75,7 +81,7 @@ const userFromToken = (token: string): User => {
     role,
     avatar: '',
     email: '',
-    jobtitle: '',
+    jobtitle: ROLE_LABEL[role] || role,
     location: '',
     posts: '',
     coverImg: '',

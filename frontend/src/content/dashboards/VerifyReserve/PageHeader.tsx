@@ -1,16 +1,6 @@
-import {
-  Typography,
-  Box,
-  IconButton,
-  Tooltip,
-  styled,
-  Avatar,
-  alpha,
-  lighten
-} from '@mui/material';
+import { Typography, Box, styled, Avatar, alpha, lighten } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import ArrowForwardTwoToneIcon from '@mui/icons-material/ArrowForwardTwoTone';
-import AccountBalanceTwoToneIcon from '@mui/icons-material/AccountBalanceTwoTone';
+import VerifiedUserTwoToneIcon from '@mui/icons-material/VerifiedUserTwoTone';
 
 const AvatarPageTitle = styled(Avatar)(
   ({ theme }) => `
@@ -40,30 +30,19 @@ function PageHeader() {
   const { t }: { t: any } = useTranslation();
 
   return (
-    <>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box display="flex" alignItems="center">
-          <AvatarPageTitle variant="rounded">
-            <AccountBalanceTwoToneIcon fontSize="large" />
-          </AvatarPageTitle>
-          <Box>
-            <Typography variant="h3" component="h3" gutterBottom>
-              {t('Expenses')}
-            </Typography>
-            <Typography variant="subtitle2">
-              {t('Dashboard to show the company expenses statistics')}
-            </Typography>
-          </Box>
-        </Box>
-        <Box>
-          <Tooltip arrow title={t('View all expenses')}>
-            <IconButton size="large" color="primary">
-              <ArrowForwardTwoToneIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+    <Box display="flex" alignItems="center">
+      <AvatarPageTitle variant="rounded">
+        <VerifiedUserTwoToneIcon fontSize="large" />
+      </AvatarPageTitle>
+      <Box>
+        <Typography variant="h3" component="h3" gutterBottom>
+          {t('ยืนยันตัวตน')}
+        </Typography>
+        <Typography variant="subtitle2">
+          {t('ตรวจสอบและยืนยันตัวตนผู้ขอเข้าใช้งานสนาม')}
+        </Typography>
       </Box>
-    </>
+    </Box>
   );
 }
 

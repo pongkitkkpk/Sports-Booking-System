@@ -1,11 +1,23 @@
 import {
   Box,
   Button,
+  Card,
+  Container,
+  Divider,
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
+  Step,
+  StepLabel,
+  Stepper,
   TextField,
   Typography,
-  Chip,
 } from "@mui/material";
+import EventAvailableTwoToneIcon from "@mui/icons-material/EventAvailableTwoTone";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -21,6 +33,51 @@ interface ReserveItem {
   court_id: number;
   time_slot_id: number;
 }
+
+const RULES_BY_COURT: { match: string; rules: string[] }[] = [
+  {
+    match: "ยิม",
+    rules: [
+      "กรุณาใส่รองเท้ากีฬาเท่านั้น",
+      "งดใช้เครื่องเสียงรบกวนผู้อื่น",
+      "ห้ามกินอาหารและเครื่องดื่มในสนาม",
+    ],
+  },
+  {
+    match: "แบดมินตัน",
+    rules: [
+      "ใช้อุปกรณ์ส่วนตัวเท่านั้น (ไม้/ลูก)",
+      "งดใส่รองเท้าที่พื้นดำหรือมีตะปู",
+      "ห้ามลากเก้าอี้หรืออุปกรณ์บนพื้นสนาม",
+    ],
+  },
+  {
+    match: "ฟุตซอล",
+    rules: [
+      "ใช้รองเท้าพื้นเรียบเท่านั้น",
+      "ไม่อนุญาตให้เตะบอลใส่กำแพง",
+      "ห้ามเล่นเกินจำนวนคนที่กำหนด",
+    ],
+  },
+  {
+    match: "เทนนิส",
+    rules: [
+      "งดใช้รองเท้าหนาม",
+      "ห้ามเล่นขณะฝนตก",
+      "เคารพสิทธิ์ผู้อื่นและไม่ส่งเสียงดัง",
+    ],
+  },
+  {
+    match: "basketball",
+    rules: [
+      "งดใช้รองเท้าหนาม",
+      "ห้ามเล่นขณะฝนตก",
+      "เคารพสิทธิ์ผู้อื่นและไม่ส่งเสียงดัง",
+    ],
+  },
+];
+
+const STEPS = ["เลือกสนาม", "กรอกข้อมูล", "ยืนยันการปิดสนาม"];
 
 function ReserveInfoForm() {
   const navigate = useNavigate();
@@ -114,209 +171,209 @@ ${selectedItems
     }
   };
 
+  const backTo = `/extended-sidebar/dashboards/reserve-admin/${selectedItems[0]?.type_court}`;
+  const activeRules =
+    selectedItems.length > 0
+      ? RULES_BY_COURT.find((r) => selectedItems[0].court.includes(r.match))
+          ?.rules
+      : undefined;
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        ✍️ กรอกรายละเอียดการจอง
-      </Typography>
-
-      {/* รายการที่เลือก */}
-      <Box
-        sx={{ my: 2 }}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexWrap="wrap"
-      >
-        {/* ✅ ฝั่งซ้าย: ข้อความ + Chips */}
-        <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
-          <Typography variant="subtitle1" sx={{ mr: 2 }}>
-            📅 รายการที่เลือกจอง:
-          </Typography>
-          {selectedItems.map((item, idx) => (
-            <Chip
-              key={idx}
-              label={`${item.court} • ${dayjs(item.date).format(
-                "DD MMM YYYY"
-              )} • ${item.time}`}
-              sx={{ mr: 1, mb: 1 }}
-            />
-          ))}
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            flex: "none",
+            width: 44,
+            height: 44,
+            borderRadius: 2,
+            display: "grid",
+            placeItems: "center",
+            fontSize: "1.4rem",
+            background: (theme) =>
+              `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+          }}
+        >
+          ✍️
         </Box>
-
-        {/* ✅ ฝั่งขวา: ปุ่มย้อนกลับ */}
-        <Button
-          variant="contained"
-          component={RouterLink}
-          to={`/extended-sidebar/dashboards/reserve-admin/${selectedItems[0]?.type_court}`}
-          startIcon={<ArrowBackTwoToneIcon />}
-          sx={{ mt: { xs: 2, sm: 0 } }} // สำหรับ responsive
-        >
-          ย้อนกลับ
-        </Button>
+        <Typography variant="h4">กรอกรายละเอียดการจอง</Typography>
       </Box>
 
-      <TextField
-        label="รหัสนักศึกษา"
-        fullWidth
-        margin="normal"
-        value={adminId}
-        onChange={(e) => setAdminId(e.target.value)}
-      />
-      <TextField
-        label="ชื่อนักศึกษา"
-        fullWidth
-        margin="normal"
-        value={adminName}
-        onChange={(e) => setAdminName(e.target.value)}
-      />
-      <TextField
-        label="หน่วยงาน / คณะ (ICIT)"
-        select
-        fullWidth
-        margin="normal"
-        value={icit}
-        onChange={(e) => setIcit(e.target.value)}
-      >
-        {icitOptions.map((opt) => (
-          <MenuItem key={opt} value={opt}>
-            {opt}
-          </MenuItem>
+      <Stepper activeStep={1} sx={{ mb: 4 }}>
+        {STEPS.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
         ))}
-      </TextField>
+      </Stepper>
 
-      <TextField
-        label="จุดประสงค์ในการจอง"
-        fullWidth
-        margin="normal"
-        select
-        value={purpose}
-        onChange={(e) => setPurpose(e.target.value)}
-      >
-        <MenuItem value="4">ปรับปรุง</MenuItem>
-        <MenuItem value="5">ปิดมหาวิทยาลัย</MenuItem>
-        <MenuItem value="6">ปิดaaa</MenuItem>
-      </TextField>
-      {/* เงื่อนไขของสนามที่จอง */}
+      <Grid container spacing={3}>
+        {/* ฟอร์มข้อมูลผู้จอง */}
+        <Grid item xs={12} md={7}>
+          <Card sx={{ p: { xs: 2.5, sm: 4 } }}>
+            <Typography variant="h6" gutterBottom>
+              ข้อมูลผู้จอง
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
 
-      <Box sx={{ mt: 3, mb: 2 }}>
-        <Typography variant="subtitle1" gutterBottom>
-          📌 เงื่อนไขการใช้สนาม:
-        </Typography>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="รหัสนักศึกษา"
+                  fullWidth
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="ชื่อนักศึกษา"
+                  fullWidth
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="หน่วยงาน / คณะ (ICIT)"
+                  select
+                  fullWidth
+                  value={icit}
+                  onChange={(e) => setIcit(e.target.value)}
+                >
+                  {icitOptions.map((opt) => (
+                    <MenuItem key={opt} value={opt}>
+                      {opt}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="จุดประสงค์ในการจอง"
+                  fullWidth
+                  select
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                >
+                  <MenuItem value="4">ปรับปรุง</MenuItem>
+                  <MenuItem value="5">ปิดมหาวิทยาลัย</MenuItem>
+                  <MenuItem value="6">อื่นๆ</MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
 
-        {selectedItems.length === 0 && (
-          <Typography color="text.secondary">
-            ยังไม่มีรายการสนามที่เลือก
-          </Typography>
-        )}
-
-        {selectedItems.length > 0 && selectedItems[0].court.includes("ยิม") && (
-          <Box sx={{ ml: 2 }}>
-            <ul>
-              {[
-                "กรุณาใส่รองเท้ากีฬาเท่านั้น",
-                "งดใช้เครื่องเสียงรบกวนผู้อื่น",
-                "ห้ามกินอาหารและเครื่องดื่มในสนาม",
-              ].map((txt, i) => (
-                <li key={`gym-${i}`} style={{ marginBottom: 4 }}>
-                  {txt}
-                </li>
-              ))}
-            </ul>
-          </Box>
-        )}
-
-        {selectedItems.length > 0 &&
-          selectedItems[0].court.includes("แบดมินตัน") && (
-            <Box sx={{ ml: 2 }}>
-              <ul>
-                {[
-                  "ใช้อุปกรณ์ส่วนตัวเท่านั้น (ไม้/ลูก)",
-                  "งดใส่รองเท้าที่พื้นดำหรือมีตะปู",
-                  "ห้ามลากเก้าอี้หรืออุปกรณ์บนพื้นสนาม",
-                ].map((txt, i) => (
-                  <li key={`badminton-${i}`} style={{ marginBottom: 4 }}>
-                    {txt}
-                  </li>
-                ))}
-              </ul>
+            <Box sx={{ mt: 2 }} display={{ xs: "none", md: "block" }}>
+              <Button
+                variant="outlined"
+                color="error"
+                component={RouterLink}
+                to={backTo}
+                startIcon={<ArrowBackTwoToneIcon />}
+                sx={{ mt: 2 }}
+              >
+                ยกเลิก
+              </Button>
             </Box>
-          )}
+          </Card>
+        </Grid>
 
-        {selectedItems.length > 0 &&
-          selectedItems[0].court.includes("ฟุตซอล") && (
-            <Box sx={{ ml: 2 }}>
-              <ul>
-                {[
-                  "ใช้รองเท้าพื้นเรียบเท่านั้น",
-                  "ไม่อนุญาตให้เตะบอลใส่กำแพง",
-                  "ห้ามเล่นเกินจำนวนคนที่กำหนด",
-                ].map((txt, i) => (
-                  <li key={`futsal-${i}`} style={{ marginBottom: 4 }}>
-                    {txt}
-                  </li>
-                ))}
-              </ul>
+        {/* สรุปรายการจอง */}
+        <Grid item xs={12} md={5}>
+          <Card sx={{ p: { xs: 2.5, sm: 3 }, position: { md: "sticky" }, top: { md: 88 } }}>
+            <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2 }}>
+              <EventAvailableTwoToneIcon color="primary" />
+              <Typography variant="h6">สรุปรายการจอง</Typography>
             </Box>
-          )}
 
-        {selectedItems.length > 0 &&
-          selectedItems[0].court.includes("เทนนิส") && (
-            <Box sx={{ ml: 2 }}>
-              <ul>
-                {[
-                  "งดใช้รองเท้าหนาม",
-                  "ห้ามเล่นขณะฝนตก",
-                  "เคารพสิทธิ์ผู้อื่นและไม่ส่งเสียงดัง",
-                ].map((txt, i) => (
-                  <li key={`tennis-${i}`} style={{ marginBottom: 4 }}>
-                    {txt}
-                  </li>
+            {selectedItems.length === 0 ? (
+              <Typography color="text.secondary">
+                ยังไม่มีรายการสนามที่เลือก
+              </Typography>
+            ) : (
+              <List dense disablePadding>
+                {selectedItems.map((item, idx) => (
+                  <ListItem
+                    key={idx}
+                    disableGutters
+                    sx={{
+                      py: 1,
+                      borderBottom: (theme) =>
+                        idx < selectedItems.length - 1
+                          ? `1px dashed ${theme.palette.divider}`
+                          : "none",
+                    }}
+                  >
+                    <ListItemText
+                      primary={item.court}
+                      secondary={`${dayjs(item.date).format(
+                        "DD MMM YYYY"
+                      )} • ${item.time}`}
+                    />
+                  </ListItem>
                 ))}
-              </ul>
-            </Box>
-          )}
+              </List>
+            )}
 
-        {selectedItems.length > 0 &&
-          selectedItems[0].court.includes("basketball") && (
-            <Box sx={{ ml: 2 }}>
-              <ul>
-                {[
-                  "งดใช้รองเท้าหนาม",
-                  "ห้ามเล่นขณะฝนตก",
-                  "เคารพสิทธิ์ผู้อื่นและไม่ส่งเสียงดัง",
-                ].map((txt, i) => (
-                  <li key={`basketball-${i}`} style={{ marginBottom: 4 }}>
-                    {txt}
-                  </li>
-                ))}
-              </ul>
-            </Box>
-          )}
-      </Box>
+            {activeRules && (
+              <>
+                <Divider sx={{ my: 2.5 }} />
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: (theme) => `${theme.palette.primary.main}0d`,
+                    border: (theme) => `1px solid ${theme.palette.primary.main}33`,
+                  }}
+                >
+                  <Typography variant="subtitle2" gutterBottom>
+                    📌 เงื่อนไขการใช้สนาม
+                  </Typography>
+                  <List dense disablePadding>
+                    {activeRules.map((txt, i) => (
+                      <ListItem key={i} disableGutters sx={{ py: 0.3 }}>
+                        <ListItemIcon sx={{ minWidth: 20 }}>
+                          <FiberManualRecordIcon
+                            sx={{ fontSize: 6, color: "primary.main" }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ variant: "body2" }}
+                          primary={txt}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              </>
+            )}
 
-      <Box
-        sx={{ mt: 3 }}
-        display="flex"
-        justifyContent="flex"
-        gap={2}
-        flexWrap="wrap"
-      >
-        <Button
-          variant="outlined"
-          color="error"
-          component={RouterLink}
-          to={`/extended-sidebar/dashboards/reserve-admin/${selectedItems[0]?.type_court}`}
-          startIcon={<ArrowBackTwoToneIcon />}
-        >
-          ยกเลิก(อันไหนดี)
-        </Button>
+            <Divider sx={{ my: 2.5 }} />
 
-        <Button variant="contained" onClick={handleSubmit}>
-          ✅ ยืนยันการส่งคำขอจอง
-        </Button>
-      </Box>
-    </Box>
+            <Button
+              fullWidth
+              size="large"
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={selectedItems.length === 0}
+            >
+              ✅ ยืนยันการส่งคำขอจอง
+            </Button>
+            <Button
+              fullWidth
+              variant="text"
+              color="error"
+              component={RouterLink}
+              to={backTo}
+              startIcon={<ArrowBackTwoToneIcon />}
+              sx={{ mt: 1, display: { xs: "flex", md: "none" } }}
+            >
+              ยกเลิก
+            </Button>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 

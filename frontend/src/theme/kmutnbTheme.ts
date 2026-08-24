@@ -24,6 +24,17 @@ export function createKmutnbTheme(baseTheme: Theme): Theme {
         paper: "#ffffff",
       },
     },
+    // The Header/Sidebar chrome (outside this theme's usual reach — see
+    // ExtendedSidebarLayout) reads brand colour from this legacy `colors`
+    // bag rather than `palette`, so it has to be kept in step separately.
+    colors: {
+      primary: {
+        lighter: `${accent}1a`,
+        light: lighten(accent, 0.3),
+        main: accent,
+        dark: accentHover,
+      },
+    },
     shape: {
       borderRadius: 12,
     },
@@ -53,6 +64,13 @@ export function createKmutnbTheme(baseTheme: Theme): Theme {
           },
         },
       },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            "&:last-child td": { borderBottom: 0 },
+          },
+        },
+      },
       MuiChip: {
         styleOverrides: {
           root: {
@@ -64,6 +82,22 @@ export function createKmutnbTheme(baseTheme: Theme): Theme {
         styleOverrides: {
           root: {
             borderRadius: 8,
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            backgroundColor: accent,
+            border: `1px solid ${accentHover}`,
+            boxShadow: `0px 2px 10px ${lighten(accent, 0.5)}`,
+          },
+        },
+      },
+      MuiAlert: {
+        styleOverrides: {
+          root: {
+            borderRadius: 10,
           },
         },
       },

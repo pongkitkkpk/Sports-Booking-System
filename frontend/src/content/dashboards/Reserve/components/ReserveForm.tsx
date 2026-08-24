@@ -1,10 +1,10 @@
 import {
   Box,
   Button,
+  Card,
   Checkbox,
   Chip,
   Grid,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -31,9 +31,7 @@ type SlotStatus =
   | "event"
   | "maintenance"
   | "closed"
-  | "aaa"
-  | "block-staff"
-  | "block-grad";
+  | "aaa";
 
 interface Props {
   courtType: string;
@@ -48,16 +46,14 @@ interface Props {
 
 const HeadCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    background: theme.palette.grey[100],
     fontWeight: 600,
     textAlign: "center",
-    borderRight: `1px solid ${theme.palette.grey[200]}`,
+    borderRight: `1px solid ${theme.palette.divider}`,
   },
 }));
 
 const BodyCell = styled(TableCell)(({ theme }) => ({
-  borderRight: `1px solid ${theme.palette.grey[200]}`,
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  borderRight: `1px solid ${theme.palette.divider}`,
   textAlign: "center",
   padding: theme.spacing(0.5),
 }));
@@ -65,7 +61,7 @@ const BodyCell = styled(TableCell)(({ theme }) => ({
 const CourtCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 600,
   whiteSpace: "nowrap",
-  borderRight: `1px solid ${theme.palette.grey[200]}`,
+  borderRight: `1px solid ${theme.palette.divider}`,
 }));
 
 function buildTimeSlots(start = 8, end = 20) {
@@ -82,14 +78,12 @@ const STATUS_STYLE: Record<
   Exclude<SlotStatus, "available">,
   { bg: string; fg?: string; label?: string }
 > = {
-  reserved: { bg: "#e53935", fg: "#fff", label: "reserved" },
-  teaching: { bg: "#43a047", fg: "#fff", label: "teaching" },
-  event: { bg: "#1e88e5", fg: "#fff", label: "event" },
-  maintenance: { bg: "#ffb300", fg: "#333", label: "maintenance" },
-  closed: { bg: "#9e9e9e", fg: "#fff", label: "closed" },
-  aaa: { bg: "#c62828", fg: "#fff", label: "aaa" },
-  "block-staff": { bg: "#8e24aa", fg: "#fff", label: "ช.บุคลากร" },
-  "block-grad": { bg: "#1565c0", fg: "#fff", label: "กศ." },
+  reserved: { bg: "#e53935", fg: "#fff", label: "จองแล้ว" },
+  teaching: { bg: "#43a047", fg: "#fff", label: "การเรียนการสอน" },
+  event: { bg: "#1e88e5", fg: "#fff", label: "กิจกรรม" },
+  maintenance: { bg: "#ffb300", fg: "#333", label: "ปิดปรับปรุง" },
+  closed: { bg: "#9e9e9e", fg: "#fff", label: "ปิดบริการ" },
+  aaa: { bg: "#c62828", fg: "#fff", label: "อื่นๆ" },
 };
 
 function CellContent({
@@ -298,10 +292,34 @@ function ReserveForm({ courtType, courtInfo, courtCount = 1 }: Props) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          🏟 {courtInfo.name} — ตารางจอง ({selectedDate.format("DD MMM YYYY")})
-        </Typography>
+      <Box sx={{ p: { xs: 2.5, sm: 4 } }}>
+        <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              flex: "none",
+              width: 44,
+              height: 44,
+              borderRadius: 2,
+              display: "grid",
+              placeItems: "center",
+              fontSize: "1.4rem",
+              background: (theme) =>
+                `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+            }}
+          >
+            🏟
+          </Box>
+          <Box>
+            <Typography variant="h4">
+              {courtInfo.name} — ตารางจอง ({selectedDate.format("DD MMM YYYY")})
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {courtInfo.description}
+              {message}
+            </Typography>
+          </Box>
+        </Box>
+
         <DatePicker
           label="เลือกวันที่"
           value={selectedDate}
@@ -316,14 +334,10 @@ function ReserveForm({ courtType, courtInfo, courtCount = 1 }: Props) {
             <TextField {...params} size="small" sx={{ mb: 2 }} />
           )}
         />
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {courtInfo.description}
-          {message}
-        </Typography>
 
         <TableContainer
-          component={Paper}
-          sx={{ borderRadius: 2, overflow: "auto" }}
+          component={Card}
+          sx={{ overflow: "auto" }}
         >
           <Table size="small" stickyHeader>
             <TableHead>
@@ -368,39 +382,16 @@ function ReserveForm({ courtType, courtInfo, courtCount = 1 }: Props) {
             </Typography>
           </Grid>
           <Grid item xs={12} md="auto">
-            <Chip
-              label="reserved"
-              sx={{ bgcolor: "#e53935", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="teaching"
-              sx={{ bgcolor: "#43a047", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="event"
-              sx={{ bgcolor: "#1e88e5", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="maintenance"
-              sx={{ bgcolor: "#ffb300", color: "#333", mr: 1 }}
-            />
-            <Chip
-              label="closed"
-              sx={{ bgcolor: "#9e9e9e", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="aaa"
-              sx={{ bgcolor: "#c62828", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="ช.บุคลากร"
-              sx={{ bgcolor: "#8e24aa", color: "#fff", mr: 1 }}
-            />
-            <Chip
-              label="กศ."
-              sx={{ bgcolor: "#1565c0", color: "#fff", mr: 1 }}
-            />
-            <Chip label="ว่าง (เช็คบ็อกซ์)" variant="outlined" />
+            <Box display="flex" flexWrap="wrap" gap={1}>
+              {Object.entries(STATUS_STYLE).map(([status, style]) => (
+                <Chip
+                  key={status}
+                  label={style.label}
+                  sx={{ bgcolor: style.bg, color: style.fg || "#fff" }}
+                />
+              ))}
+              <Chip label="ว่าง (เช็คบ็อกซ์)" variant="outlined" />
+            </Box>
           </Grid>
 
           <Grid item xs />

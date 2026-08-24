@@ -1,7 +1,10 @@
 import {
+  Alert,
   Box,
   Button,
+  Card,
   Checkbox,
+  Divider,
   FormControlLabel,
   Grid,
   MenuItem,
@@ -86,10 +89,11 @@ function CloseByDateRange({ courtName, courtCount, courtIdStart }: Props) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ px: 4 }}>
+      <Card sx={{ p: { xs: 2.5, sm: 4 } }}>
         <Typography variant="h5" gutterBottom>
           🔒 ปิดปรับปรุง {courtName} แบบระบุช่วงวัน
         </Typography>
+        <Divider sx={{ mb: 3 }} />
 
         {/* 🗓 เลือกช่วงวัน */}
         <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -141,7 +145,7 @@ function CloseByDateRange({ courtName, courtCount, courtIdStart }: Props) {
             <MenuItem value="3">กิจกรรมทั้งวัน</MenuItem>
             <MenuItem value="4">ปรับปรุง</MenuItem>
             <MenuItem value="5">ปิดมหาวิทยาลัย</MenuItem>
-            <MenuItem value="6">ปิดaaa</MenuItem>
+            <MenuItem value="6">อื่นๆ</MenuItem>
           </TextField>
         </Grid>
 
@@ -179,20 +183,16 @@ function CloseByDateRange({ courtName, courtCount, courtIdStart }: Props) {
           </Button>
         </Box>
         {result && (
-          <Box mt={2}>
-            <Typography color="success.main" whiteSpace="pre-line">
-              {result}
-            </Typography>
-          </Box>
+          <Alert severity="success" sx={{ mt: 2, whiteSpace: "pre-line" }}>
+            {result}
+          </Alert>
         )}
         {error && (
-          <Box mt={2}>
-            <Typography color="error" whiteSpace="pre-line">
-              {error}
-            </Typography>
-          </Box>
+          <Alert severity="error" sx={{ mt: 2, whiteSpace: "pre-line" }}>
+            {error}
+          </Alert>
         )}
-      </Box>
+      </Card>
     </LocalizationProvider>
   );
 }

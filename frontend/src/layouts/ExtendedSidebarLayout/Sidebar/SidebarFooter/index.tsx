@@ -1,38 +1,9 @@
-import {
-  Box,
-  IconButton,
-  Badge,
-  Tooltip,
-  TooltipProps,
-  alpha,
-  tooltipClasses,
-  styled,
-  useTheme
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import EventTwoToneIcon from '@mui/icons-material/EventTwoTone';
+import { Box, Button, alpha, useTheme } from '@mui/material';
 import PowerSettingsNewTwoToneIcon from '@mui/icons-material/PowerSettingsNewTwoTone';
-import SmsTwoToneIcon from '@mui/icons-material/SmsTwoTone';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../../hooks/useAuth';
 
-const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.colors.alpha.trueWhite[100],
-    color: theme.palette.getContrastText(theme.colors.alpha.trueWhite[100]),
-    boxShadow: theme.shadows[24],
-    fontWeight: 'bold',
-    fontSize: theme.typography.pxToRem(12)
-  },
-  [`& .${tooltipClasses.arrow}`]: {
-    color: theme.colors.alpha.trueWhite[100]
-  }
-}));
-
 function SidebarFooter() {
-  const { t }: { t: any } = useTranslation();
   const theme = useTheme();
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -47,67 +18,27 @@ function SidebarFooter() {
   };
 
   return (
-    <Box
-      sx={{
-        height: 60
-      }}
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <LightTooltip placement="top" arrow title={t('Messenger')}>
-        <Badge
-          color="success"
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          sx={{
-            '.MuiBadge-badge': {
-              animation: 'pulse 1s infinite',
-              top: '5%',
-              transition: `${theme.transitions.create(['all'])}`
-            }
-          }}
-          variant="dot"
-          overlap="circular"
-        >
-          <IconButton
-            to="/extended-sidebar/applications/messenger"
-            component={RouterLink}
-            sx={{
-              background: `${theme.colors.alpha.trueWhite[10]}`,
-              color: `${theme.colors.alpha.trueWhite[70]}`,
-              transition: `${theme.transitions.create(['all'])}`,
+    <Box sx={{ px: 2, py: 2 }}>
+      <Button
+        fullWidth
+        onClick={handleLogout}
+        startIcon={<PowerSettingsNewTwoToneIcon />}
+        sx={{
+          justifyContent: 'flex-start',
+          color: theme.palette.primary.dark,
+          backgroundColor: alpha(theme.palette.primary.main, 0.1),
+          border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`,
+          transition: `${theme.transitions.create(['all'])}`,
 
-              '&:hover': {
-                background: `${alpha(theme.colors.alpha.trueWhite[100], 0.2)}`,
-                color: `${theme.colors.alpha.trueWhite[100]}`
-              },
-              mx: 1
-            }}
-          >
-            <SmsTwoToneIcon fontSize="small" />
-          </IconButton>
-        </Badge>
-      </LightTooltip>
-      <LightTooltip placement="top" arrow title={t('Logout')}>
-        <IconButton
-          sx={{
-            background: `${theme.colors.alpha.trueWhite[10]}`,
-            color: `${theme.colors.alpha.trueWhite[70]}`,
-            transition: `${theme.transitions.create(['all'])}`,
-
-            '&:hover': {
-              background: `${alpha(theme.colors.alpha.trueWhite[100], 0.2)}`,
-              color: `${theme.colors.alpha.trueWhite[100]}`
-            }
-          }}
-          onClick={handleLogout}
-        >
-          <PowerSettingsNewTwoToneIcon fontSize="small" />
-        </IconButton>
-      </LightTooltip>
+          '&:hover': {
+            backgroundColor: theme.palette.primary.main,
+            borderColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText
+          }
+        }}
+      >
+        ออกจากระบบ
+      </Button>
     </Box>
   );
 }

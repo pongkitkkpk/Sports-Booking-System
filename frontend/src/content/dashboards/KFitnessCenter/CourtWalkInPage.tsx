@@ -6,12 +6,14 @@ import {
   Grid,
   TextField,
   Button,
+  Card,
+  Divider,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Paper,
+  TableContainer,
 } from "@mui/material";
 import axios from "axios";
 import { useSnackbar } from "notistack";
@@ -144,65 +146,66 @@ function CourtWalkInPage() {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        แบบฟอร์ม Walk-in (อันนี้กำลังคิดอยู่ว่ามี walk-in
-        ดีไหมหรือให้เข้าเว็บจองเหมือนปกติ ดี)
-      </Typography>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
-          <TextField fullWidth label="วัน" value={strnow} disabled />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField fullWidth label="ช่วงเวลา" value={timeRange} disabled />
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="รหัสประจำตัวนักศึกษา"
-            value={studentId}
-            inputRef={studentIdRef}
-            onChange={handleStudentIdChange}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <TextField fullWidth label="ชื่อ" value={studentName} disabled />
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="นามสกุล"
-            value={studentLastname}
-            disabled
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <TextField fullWidth label="ประเภท" value={studentType} disabled />
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-          >
-            บันทึกการเข้าใช้งาน
-          </Button>
-        </Grid>
-      </Grid>
-
-      <Box mt={4}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <Card sx={{ p: { xs: 2.5, sm: 4 } }}>
         <Typography variant="h5" gutterBottom>
-          รายชื่อผู้ใช้บริการ Walk-in
+          🚶‍♂️ แบบฟอร์ม Walk-in
         </Typography>
+        <Divider sx={{ mb: 3 }} />
 
-        <Paper>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={4}>
+            <TextField fullWidth label="วัน" value={strnow} disabled />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField fullWidth label="ช่วงเวลา" value={timeRange} disabled />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="รหัสประจำตัวนักศึกษา"
+              value={studentId}
+              inputRef={studentIdRef}
+              onChange={handleStudentIdChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField fullWidth label="ชื่อ" value={studentName} disabled />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="นามสกุล"
+              value={studentLastname}
+              disabled
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField fullWidth label="ประเภท" value={studentType} disabled />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+            >
+              บันทึกการเข้าใช้งาน
+            </Button>
+          </Grid>
+        </Grid>
+      </Card>
+
+      <Card>
+        <Box sx={{ p: { xs: 2.5, sm: 4 }, pb: 2 }}>
+          <Typography variant="h5">รายชื่อผู้ใช้บริการ Walk-in</Typography>
+        </Box>
+        <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
@@ -216,7 +219,7 @@ function CourtWalkInPage() {
             </TableHead>
             <TableBody>
               {walkInRows.map((row, index) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} hover>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{row.time_range}</TableCell>
                   <TableCell>{row.student_id}</TableCell>
@@ -227,8 +230,8 @@ function CourtWalkInPage() {
               ))}
             </TableBody>
           </Table>
-        </Paper>
-      </Box>
+        </TableContainer>
+      </Card>
     </Box>
   );
 }

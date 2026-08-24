@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   Divider,
-  alpha,
   List,
   ListItem,
   ListItemText,
@@ -17,16 +16,13 @@ import {
   styled,
   useTheme
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone';
 import UnfoldMoreTwoToneIcon from '@mui/icons-material/UnfoldMoreTwoTone';
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
-import AccountTreeTwoToneIcon from '@mui/icons-material/AccountTreeTwoTone';
 
 const MenuUserBox = styled(Box)(
   ({ theme }) => `
-    background: ${theme.colors.alpha.black[5]};
+    background: ${theme.palette.background.default};
     padding: ${theme.spacing(2)};
 `
 );
@@ -39,29 +35,13 @@ const UserBoxText = styled(Box)(
 );
 
 const UserBoxLabel = styled(Typography)(
-  ({ theme }) => `
-    font-weight: ${theme.typography.fontWeightBold};
-    color: ${theme.sidebar.menuItemColor};
+  () => `
+    font-weight: 700;
     display: block;
-
-    &.popoverTypo {
-      color: ${theme.palette.secondary.main};
-    }
-`
-);
-
-const UserBoxDescription = styled(Typography)(
-  ({ theme }) => `
-    color: ${alpha(theme.sidebar.menuItemColor, 0.6)};
-
-    &.popoverTypo {
-      color: ${theme.palette.secondary.light};
-    }
 `
 );
 
 function SidebarTopSection() {
-  const { t }: { t: any } = useTranslation();
   const theme = useTheme();
 
   const navigate = useNavigate();
@@ -103,26 +83,18 @@ function SidebarTopSection() {
           width: 68,
           height: 68,
           mb: 2,
-          mx: 'auto'
-        }}
-        alt={user.name}
-        src={user.avatar}
-      />
-
-      <Typography
-        variant="h4"
-        sx={{
-          color: `${theme.colors.alpha.trueWhite[100]}`
+          mx: 'auto',
+          bgcolor: 'primary.main',
+          fontSize: '1.6rem'
         }}
       >
+        {user?.name?.charAt(0).toUpperCase()}
+      </Avatar>
+
+      <Typography variant="h4" color="text.primary">
         {user.name}
       </Typography>
-      <Typography
-        variant="subtitle1"
-        sx={{
-          color: `${theme.colors.alpha.trueWhite[70]}`
-        }}
-      >
+      <Typography variant="subtitle1" color="text.secondary">
         {user.jobtitle}
       </Typography>
       <IconButton
@@ -130,13 +102,13 @@ function SidebarTopSection() {
         sx={{
           position: 'absolute',
           right: theme.spacing(0),
-          color: `${theme.colors.alpha.trueWhite[70]}`,
           top: theme.spacing(0),
-          background: `${theme.colors.alpha.trueWhite[10]}`,
+          color: 'text.secondary',
+          background: theme.palette.background.default,
 
           '&:hover': {
-            color: `${theme.colors.alpha.trueWhite[100]}`,
-            background: `${alpha(theme.colors.alpha.trueWhite[100], 0.2)}`
+            color: 'primary.main',
+            background: theme.palette.action.hover
           }
         }}
         ref={ref}
@@ -158,33 +130,22 @@ function SidebarTopSection() {
           horizontal: 'center'
         }}
       >
-        <MenuUserBox
-          sx={{
-            minWidth: 210
-          }}
-          display="flex"
-        >
-          <Avatar variant="rounded" alt={user.name} src={user.avatar} />
+        <MenuUserBox sx={{ minWidth: 210 }} display="flex">
+          <Avatar
+            variant="rounded"
+            sx={{ bgcolor: 'primary.main' }}
+          >
+            {user?.name?.charAt(0).toUpperCase()}
+          </Avatar>
           <UserBoxText>
-            <UserBoxLabel className="popoverTypo" variant="body1">
-              {user.name}
-            </UserBoxLabel>
-            <UserBoxDescription className="popoverTypo" variant="body2">
+            <UserBoxLabel variant="body1">{user.name}</UserBoxLabel>
+            <Typography variant="body2" color="text.secondary">
               {user.jobtitle}
-            </UserBoxDescription>
+            </Typography>
           </UserBoxText>
         </MenuUserBox>
-        <Divider
-          sx={{
-            mb: 0
-          }}
-        />
-        <List
-          sx={{
-            p: 1
-          }}
-          component="nav"
-        >
+        <Divider sx={{ mb: 0 }} />
+        <List sx={{ p: 1 }} component="nav">
           <ListItem
             onClick={() => {
               handleClose();
@@ -194,44 +155,14 @@ function SidebarTopSection() {
             component={NavLink}
           >
             <AccountBoxTwoToneIcon fontSize="small" />
-            <ListItemText primary={t('Profile')} />
-          </ListItem>
-          <ListItem
-            onClick={() => {
-              handleClose();
-            }}
-            button
-            to={`/${
-              location.pathname.split('/')[1]
-            }/applications/mailbox/inbox`}
-            component={NavLink}
-          >
-            <InboxTwoToneIcon fontSize="small" />
-            <ListItemText primary={t('Inbox')} />
-          </ListItem>
-          <ListItem
-            onClick={() => {
-              handleClose();
-            }}
-            button
-            to={`/${
-              location.pathname.split('/')[1]
-            }/applications/projects-board`}
-            component={NavLink}
-          >
-            <AccountTreeTwoToneIcon fontSize="small" />
-            <ListItemText primary={t('Projects')} />
+            <ListItemText primary="โปรไฟล์" />
           </ListItem>
         </List>
         <Divider />
         <Box m={1}>
           <Button color="primary" fullWidth onClick={handleLogout}>
-            <LockOpenTwoToneIcon
-              sx={{
-                mr: 1
-              }}
-            />
-            {t('Sign out')}
+            <LockOpenTwoToneIcon sx={{ mr: 1 }} />
+            ออกจากระบบ
           </Button>
         </Box>
       </Popover>
