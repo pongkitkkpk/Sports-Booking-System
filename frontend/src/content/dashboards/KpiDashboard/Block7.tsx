@@ -1,5 +1,4 @@
 import { Box, Card, Typography, Divider, useTheme } from "@mui/material";
-import { useTranslation } from "react-i18next";
 import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 
@@ -19,7 +18,6 @@ interface ReservationSlot {
 }
 
 function Block7({ rows }: { rows: ReservationSlot[] }) {
-  const { t }: { t: any } = useTranslation();
   const theme = useTheme();
 
   // Group ข้อมูลตามวันที่และสถานะ
@@ -104,7 +102,7 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
       labels: { style: { fontSize: "12px" } },
     },
     yaxis: {
-      title: { text: "Reservations" },
+      title: { text: "จำนวนการจอง" },
     },
     legend: {
       position: "top",
@@ -126,21 +124,21 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
   };
 
   const chartData = [
-    { name: "Success", data: successData },
-    { name: "Approved", data: approvedData },
-    { name: "Pending", data: pendingData },
-    { name: "Cancelled", data: cancelData },
-    { name: "No Show", data: noshowData },
-    { name: "Close", data: closeData },
+    { name: "สำเร็จ", data: successData },
+    { name: "อนุมัติแล้ว", data: approvedData },
+    { name: "รออนุมัติ", data: pendingData },
+    { name: "ยกเลิก", data: cancelData },
+    { name: "ไม่มาใช้บริการ", data: noshowData },
+    { name: "ปิด", data: closeData },
     { name: "Walk-in", data: walkinData },
   ];
 
   return (
     <Card>
       <Box p={3}>
-        <Typography variant="h4">{t("Reservation Trends")}</Typography>
-        <Typography variant="subtitle2">
-          {t("Daily summary of reservations by status")}
+        <Typography variant="h4">แนวโน้มการจอง</Typography>
+        <Typography variant="subtitle2" color="text.secondary">
+          สรุปจำนวนการจองรายวัน แยกตามสถานะ
         </Typography>
       </Box>
       <Divider />

@@ -16,7 +16,7 @@ function DashboardHybrid() {
   return (
     <>
       <Helmet>
-        <title>Reservation Admin Dashboard</title>
+        <title>สรุปการใช้สนาม - ระบบจองสนามกีฬา KMUTNB</title>
       </Helmet>
       <PageTitleWrapper>
         <PageHeader />
@@ -30,8 +30,8 @@ function DashboardHybrid() {
           textColor="primary"
           indicatorColor="primary"
         >
-          <Tab label="📊 KPI Report" />
-          <Tab label="✅ Pending Approval" />
+          <Tab label="📊 รายงานสรุป" />
+          <Tab label="✅ รออนุมัติ" />
         </Tabs>
       </Box>
 
