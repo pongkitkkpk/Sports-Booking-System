@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import MoreVertTwoToneIcon from "@mui/icons-material/MoreVertTwoTone";
-import { useTranslation } from "react-i18next";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -53,12 +52,22 @@ interface ReservationSlot {
   reason?: string;
 }
 
+const APPROVE_STATUS_LABEL: Record<string, { label: string; color: any }> = {
+  pending: { label: "รอดำเนินการ", color: "warning" },
+  approved: { label: "อนุมัติแล้ว", color: "info" },
+  success: { label: "สำเร็จ", color: "success" },
+  rejected: { label: "ถูกระงับ", color: "error" },
+  no_show: { label: "ไม่มาใช้บริการ", color: "default" },
+  cancel: { label: "ยกเลิก", color: "default" },
+  close: { label: "ปิด", color: "default" },
+  "walk-in": { label: "หน้างาน", color: "secondary" },
+};
+
 function VerifyPage({
   onDataFetched,
 }: {
   onDataFetched: (rows: ReservationSlot[]) => void;
 }) {
-  const { t }: { t: any } = useTranslation();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -172,9 +181,9 @@ function VerifyPage({
         justifyContent="space-between"
       >
         <Box>
-          <Typography variant="h4">{t("Reservation KPIs")}</Typography>
+          <Typography variant="h4">รายการรอยืนยันตัวตน</Typography>
           <Typography variant="subtitle2">
-            {t("Summary of reservations by filters")}
+            ค้นหาและยืนยันการเข้าใช้สนามตามช่วงวันที่
           </Typography>
         </Box>
         <IconButton color="primary">
@@ -189,7 +198,7 @@ function VerifyPage({
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={3}>
               <DatePicker
-                label="From Date"
+                label="วันที่เริ่มต้น"
                 value={fromDate}
                 onChange={(newVal) => setFromDate(newVal)}
                 maxDate={toDate}
@@ -198,7 +207,7 @@ function VerifyPage({
             </Grid>
             <Grid item xs={12} md={3}>
               <DatePicker
-                label="To Date"
+                label="วันที่สิ้นสุด"
                 value={toDate}
                 onChange={(newVal) => setToDate(newVal)}
                 minDate={fromDate}
@@ -208,21 +217,21 @@ function VerifyPage({
             <Grid item xs={12} md={3}>
               <TextField
                 select
-                label="Court Type"
+                label="ประเภทสนาม"
                 value={courtType}
                 onChange={(e) => setCourtType(e.target.value)}
                 fullWidth
               >
-                <MenuItem value="">All Courts</MenuItem>
-                <MenuItem value="BADMINTON">Badminton</MenuItem>
-                <MenuItem value="VOLLEYBALL">Volleyball</MenuItem>
-                <MenuItem value="BASKETBALL">Basketball</MenuItem>
-                <MenuItem value="FUTSAL">Futsal</MenuItem>
-                <MenuItem value="BOXING">Boxing</MenuItem>
-                <MenuItem value="JUDO">Judo</MenuItem>
-                <MenuItem value="TENNIS">Tennis</MenuItem>
-                <MenuItem value="FOOTBALL">Football</MenuItem>
-                <MenuItem value="GYM">Gym</MenuItem>
+                <MenuItem value="">ทุกสนาม</MenuItem>
+                <MenuItem value="BADMINTON">แบดมินตัน</MenuItem>
+                <MenuItem value="VOLLEYBALL">วอลเลย์บอล</MenuItem>
+                <MenuItem value="BASKETBALL">บาสเกตบอล</MenuItem>
+                <MenuItem value="FUTSAL">ฟุตซอล</MenuItem>
+                <MenuItem value="BOXING">มวย</MenuItem>
+                <MenuItem value="JUDO">ยูโด</MenuItem>
+                <MenuItem value="TENNIS">เทนนิส</MenuItem>
+                <MenuItem value="FOOTBALL">ฟุตบอล</MenuItem>
+                <MenuItem value="GYM">ยิมออกกำลังกาย</MenuItem>
 
                 {/* ✅ เพิ่ม courtType ได้ตามจริง */}
               </TextField>
@@ -230,7 +239,7 @@ function VerifyPage({
 
             <Grid item xs={12} md={1}>
               <Button variant="contained" fullWidth onClick={fetchData}>
-                Search
+                ค้นหา
               </Button>
             </Grid>
           </Grid>
@@ -245,11 +254,11 @@ function VerifyPage({
             <TableHead>
               <TableRow>
                 <TableCell>#</TableCell>
-                <TableCell>{t("Status")}</TableCell>
-                <TableCell>{t("Booking Date")}</TableCell>
-                <TableCell>{t("Usage Date & Time")}</TableCell>
-                <TableCell>{t("Court")}</TableCell>
-                <TableCell>{t("Actions")}</TableCell>
+                <TableCell>สถานะ</TableCell>
+                <TableCell>วันที่ทำรายการ</TableCell>
+                <TableCell>วันเวลาที่ใช้งาน</TableCell>
+                <TableCell>สนาม</TableCell>
+                <TableCell>การดำเนินการ</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -259,7 +268,17 @@ function VerifyPage({
                   <TableRow key={row.id} hover>
                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell>
-                      <Chip label={row.approve_status} size="small" />
+                      <Chip
+                        label={
+                          APPROVE_STATUS_LABEL[row.approve_status]?.label ??
+                          row.approve_status
+                        }
+                        color={
+                          APPROVE_STATUS_LABEL[row.approve_status]?.color ??
+                          "default"
+                        }
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell>
                       {row.created_at
@@ -309,7 +328,7 @@ function VerifyPage({
                             setOpenReason(true);
                           }}
                         >
-                          No Show
+                          ไม่มาใช้บริการ
                         </Button>
                       </Stack>
                     </TableCell>
@@ -330,6 +349,10 @@ function VerifyPage({
             setPage(0);
           }}
           rowsPerPageOptions={[5, 10, 20, 50]}
+          labelRowsPerPage="แถวต่อหน้า:"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}-${to} จาก ${count}`
+          }
         />
 
         {/* Reason Dialog */}

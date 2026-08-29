@@ -26,6 +26,7 @@ const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
         sx={{
           flex: 1,
           height: '100%',
+          color: 'text.primary',
 
           '.MuiPageTitle-wrapper': {
             background:

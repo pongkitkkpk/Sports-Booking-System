@@ -26,8 +26,8 @@ function DashboardHybrid() {
           textColor="primary"
           indicatorColor="primary"
         >
-          <Tab label="📊 Fitness Report" />
-          <Tab label="🚶‍♂️ Walk-in Users" />
+          <Tab label="📊 สรุปการใช้งาน" />
+          <Tab label="🚶‍♂️ ผู้ใช้บริการหน้างาน" />
         </Tabs>
       </Box>
       {tabIndex === 0 && (

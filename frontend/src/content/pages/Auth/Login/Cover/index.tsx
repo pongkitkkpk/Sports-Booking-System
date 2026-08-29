@@ -44,7 +44,7 @@ function LoginCover() {
       <Helmet>
         <title>เข้าสู่ระบบ - ระบบจองสนามกีฬา KMUTNB</title>
       </Helmet>
-      <MainContent>
+      <MainContent sx={{ color: 'text.primary' }}>
         <Container maxWidth="xs">
           <Card sx={{ p: 4 }}>
             <Box textAlign="center">

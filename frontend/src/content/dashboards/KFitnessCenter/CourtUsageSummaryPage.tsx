@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import MoreVertTwoToneIcon from "@mui/icons-material/MoreVertTwoTone";
-import { useTranslation } from "react-i18next";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -53,8 +52,6 @@ function CourtUsageSummaryPage({
 }: {
   onDataFetched: (rows: ReservationSlot[]) => void;
 }) {
-  const { t }: { t: any } = useTranslation();
-
   const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
   const [rows, setRows] = useState<ReservationSlot[]>([]);
 
@@ -107,11 +104,9 @@ function CourtUsageSummaryPage({
           justifyContent="space-between"
         >
           <Box>
-            <Typography variant="h4">
-              {t("Reservation KPIs Fitness Center")}
-            </Typography>
+            <Typography variant="h4">สรุปการใช้งานยิมออกกำลังกาย</Typography>
             <Typography variant="subtitle2">
-              {t("Summary of reservations by filters")}
+              ค้นหาจำนวนผู้ใช้บริการตามช่วงวันที่
             </Typography>
           </Box>
           <IconButton color="primary">
@@ -126,7 +121,7 @@ function CourtUsageSummaryPage({
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={3}>
                 <DatePicker
-                  label="From Date"
+                  label="วันที่เริ่มต้น"
                   value={fromDate}
                   onChange={(newVal) => setFromDate(newVal)}
                   maxDate={toDate}
@@ -135,7 +130,7 @@ function CourtUsageSummaryPage({
               </Grid>
               <Grid item xs={12} md={3}>
                 <DatePicker
-                  label="To Date"
+                  label="วันที่สิ้นสุด"
                   value={toDate}
                   onChange={(newVal) => setToDate(newVal)}
                   minDate={fromDate}
@@ -145,7 +140,7 @@ function CourtUsageSummaryPage({
 
               <Grid item xs={12} md={1}>
                 <Button variant="contained" fullWidth onClick={fetchData}>
-                  Search
+                  ค้นหา
                 </Button>
               </Grid>
             </Grid>
@@ -159,11 +154,11 @@ function CourtUsageSummaryPage({
             <TableWrapper>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t("ลำดับ")}</TableCell>
-                  <TableCell>{t("วันที่")}</TableCell>
-                  <TableCell>{t("ช่วงเวลา")}</TableCell>
-                  <TableCell>{t("จำนวนผู้ใช้บริการ")}</TableCell>
-                  <TableCell>{t("รายชื่อผู้ใช้บริการ")}</TableCell>
+                  <TableCell>ลำดับ</TableCell>
+                  <TableCell>วันที่</TableCell>
+                  <TableCell>ช่วงเวลา</TableCell>
+                  <TableCell>จำนวนผู้ใช้บริการ</TableCell>
+                  <TableCell>รายชื่อผู้ใช้บริการ</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -184,7 +179,7 @@ function CourtUsageSummaryPage({
                           size="small"
                           onClick={() => handleshowdata(row)}
                         >
-                          Show
+                          ดูรายชื่อ
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -204,6 +199,10 @@ function CourtUsageSummaryPage({
               setPage(0);
             }}
             rowsPerPageOptions={[5, 10, 20, 50]}
+            labelRowsPerPage="แถวต่อหน้า:"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}-${to} จาก ${count}`
+            }
           />
         </Box>
       </Card>

@@ -182,8 +182,8 @@ function ReserveGymForm({
       return (
         <Box
           sx={{
-            bgcolor: "#e0e0e0",
-            color: "#333",
+            bgcolor: "#4A4744",
+            color: "#fff",
             borderRadius: 1,
             minHeight: 36,
             display: "flex",
@@ -202,8 +202,8 @@ function ReserveGymForm({
       return (
         <Box
           sx={{
-            bgcolor: "#ffb300",
-            color: "#333",
+            bgcolor: "#92620A",
+            color: "#fff",
             borderRadius: 1,
             minHeight: 36,
             display: "flex",
@@ -229,7 +229,7 @@ function ReserveGymForm({
         >
           <Box
             sx={{
-              bgcolor: "#e53935",
+              bgcolor: "#8A1C12",
               color: "#fff",
               borderRadius: 1,
               minHeight: 36,
@@ -429,11 +429,11 @@ function ReserveGymForm({
           </Grid>
           <Grid item xs={12} md="auto">
             <Box display="flex" flexWrap="wrap" gap={1}>
-              <Chip label="เต็ม" sx={{ bgcolor: "#e53935", color: "#fff" }} />
-              <Chip label="close" sx={{ bgcolor: "#e0e0e0", color: "#333" }} />
+              <Chip label="เต็ม" sx={{ bgcolor: "#8A1C12", color: "#fff"}} />
+              <Chip label="close" sx={{ bgcolor: "#4A4744", color: "#fff" }} />
               <Chip
                 label="งานช่างซ่อม"
-                sx={{ bgcolor: "#ffb300", color: "#333" }}
+                sx={{ bgcolor: "#92620A", color: "#fff" }}
               />
               <Chip label="ว่าง (เช็คบ็อกซ์)" variant="outlined" />
             </Box>

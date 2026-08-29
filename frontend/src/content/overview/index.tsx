@@ -76,7 +76,7 @@ function Overview() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ bgcolor: 'background.default', minHeight: '100%' }}>
+      <Box sx={{ bgcolor: 'background.default', color: 'text.primary', minHeight: '100%' }}>
         <Helmet>
           <title>ระบบจองสนามกีฬา KMUTNB</title>
         </Helmet>

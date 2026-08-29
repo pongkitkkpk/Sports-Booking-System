@@ -78,12 +78,12 @@ const STATUS_STYLE: Record<
   Exclude<SlotStatus, "available">,
   { bg: string; fg?: string; label?: string }
 > = {
-  reserved: { bg: "#e53935", fg: "#fff", label: "จองแล้ว" },
-  teaching: { bg: "#43a047", fg: "#fff", label: "การเรียนการสอน" },
-  event: { bg: "#1e88e5", fg: "#fff", label: "กิจกรรม" },
-  maintenance: { bg: "#ffb300", fg: "#333", label: "ปิดปรับปรุง" },
-  closed: { bg: "#9e9e9e", fg: "#fff", label: "ปิดบริการ" },
-  aaa: { bg: "#c62828", fg: "#fff", label: "อื่นๆ" },
+  reserved: { bg: "#8A1C12", fg: "#fff", label: "จองแล้ว" },
+  teaching: { bg: "#146C43", fg: "#fff", label: "การเรียนการสอน" },
+  event: { bg: "#3B6285", fg: "#fff", label: "กิจกรรม" },
+  maintenance: { bg: "#92620A", fg: "#fff", label: "ปิดปรับปรุง" },
+  closed: { bg: "#4A4744", fg: "#fff", label: "ปิดบริการ" },
+  aaa: { bg: "#6B5B4D", fg: "#fff", label: "อื่นๆ" },
 };
 
 function CellContent({

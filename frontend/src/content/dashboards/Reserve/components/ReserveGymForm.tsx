@@ -63,14 +63,14 @@ const STATUS_STYLE: Record<
   Exclude<SlotStatus, "available">,
   { bg: string; fg?: string; label?: string }
 > = {
-  reserved: { bg: "#e53935", fg: "#fff", label: "reserved" },
-  teaching: { bg: "#43a047", fg: "#fff", label: "teaching" },
-  event: { bg: "#1e88e5", fg: "#fff", label: "event" },
-  maintenance: { bg: "#ffb300", fg: "#333", label: "maintenance" },
-  closed: { bg: "#9e9e9e", fg: "#fff", label: "closed" },
-  aaa: { bg: "#c62828", fg: "#fff", label: "aaa" },
-  "block-staff": { bg: "#8e24aa", fg: "#fff", label: "ช.บุคลากร" },
-  "block-grad": { bg: "#1565c0", fg: "#fff", label: "กศ." },
+  reserved: { bg: "#8A1C12", fg: "#fff", label: "reserved" },
+  teaching: { bg: "#146C43", fg: "#fff", label: "teaching" },
+  event: { bg: "#3B6285", fg: "#fff", label: "event" },
+  maintenance: { bg: "#92620A", fg: "#fff", label: "maintenance" },
+  closed: { bg: "#4A4744", fg: "#fff", label: "closed" },
+  aaa: { bg: "#6B5B4D", fg: "#fff", label: "aaa" },
+  "block-staff": { bg: "#6A4C93", fg: "#fff", label: "ช.บุคลากร" },
+  "block-grad": { bg: "#2F5D62", fg: "#fff", label: "กศ." },
 };
 
 function CellContent({
@@ -445,20 +445,20 @@ function ReserveGymForm({
           </Grid>
           <Grid item xs={12} md="auto">
             <Box display="flex" flexWrap="wrap" gap={1}>
-              <Chip label="reserved" sx={{ bgcolor: "#e53935", color: "#fff" }} />
-              <Chip label="teaching" sx={{ bgcolor: "#43a047", color: "#fff" }} />
-              <Chip label="event" sx={{ bgcolor: "#1e88e5", color: "#fff" }} />
+              <Chip label="reserved" sx={{ bgcolor: "#8A1C12", color: "#fff" }} />
+              <Chip label="teaching" sx={{ bgcolor: "#146C43", color: "#fff" }} />
+              <Chip label="event" sx={{ bgcolor: "#3B6285", color: "#fff" }} />
               <Chip
                 label="maintenance"
-                sx={{ bgcolor: "#ffb300", color: "#333" }}
+                sx={{ bgcolor: "#92620A", color: "#fff" }}
               />
-              <Chip label="closed" sx={{ bgcolor: "#9e9e9e", color: "#fff" }} />
-              <Chip label="aaa" sx={{ bgcolor: "#c62828", color: "#fff" }} />
+              <Chip label="closed" sx={{ bgcolor: "#4A4744", color: "#fff" }} />
+              <Chip label="aaa" sx={{ bgcolor: "#6B5B4D", color: "#fff" }} />
               <Chip
                 label="ช.บุคลากร"
-                sx={{ bgcolor: "#8e24aa", color: "#fff" }}
+                sx={{ bgcolor: "#6A4C93", color: "#fff" }}
               />
-              <Chip label="กศ." sx={{ bgcolor: "#1565c0", color: "#fff" }} />
+              <Chip label="กศ." sx={{ bgcolor: "#2F5D62", color: "#fff" }} />
               <Chip label="ว่าง (เช็คบ็อกซ์)" variant="outlined" />
             </Box>
           </Grid>
