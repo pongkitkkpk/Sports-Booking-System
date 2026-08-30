@@ -19,8 +19,11 @@ import { KpiSummaryQueryDto } from './dto/KpiSummaryQueryDto';
 import { Reservation } from 'src/reservations/entities/reservation.entity';
 
 @Controller('admin/reservation-slots')
-// @UseGuards(AuthGuard('jwt'), RolesGuard)
-// @Roles('admin')
+// ทุก endpoint ในนี้ต้อง login ก่อน (ไม่เปิดให้ผู้ใช้ไม่ผ่านการยืนยันตัวตนเรียกได้)
+// endpoint ที่ผูกกับ "การปิดสนาม" และ "อนุมัติการจอง" โดยเฉพาะ ล็อกเพิ่มเป็น admin เท่านั้น
+// ส่วน reject/verifysuccess/verifynoshow/banned/unban/kpis ยังใช้ร่วมกับหน้า "ยืนยันตัวตน"
+// (VerifyReserve) ซึ่งไม่ได้จำกัดเฉพาะ admin จึงคงไว้แค่ระดับ "ต้อง login"
+@UseGuards(AuthGuard('jwt'))
 export class ReservationSlotsAdminController {
   constructor(private readonly service: ReservationSlotsService) {}
 
@@ -34,6 +37,8 @@ export class ReservationSlotsAdminController {
     return { message: 'hello from admin 👋' };
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Patch(':id/approve')
   async approve(@Param('id', ParseIntPipe) id: number) {
     const result = await this.service.approve(id);
@@ -76,6 +81,8 @@ export class ReservationSlotsAdminController {
     return this.service.unbanReservation(id);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Post('close-court')
   async closeCourt(
     @Body()
@@ -96,6 +103,8 @@ export class ReservationSlotsAdminController {
     );
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Post()
   async createAdminReservation(
     @Body()

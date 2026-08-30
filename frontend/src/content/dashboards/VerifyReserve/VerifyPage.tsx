@@ -9,9 +9,7 @@ import {
   TableBody,
   Table,
   TableContainer,
-  IconButton,
   styled,
-  useTheme,
   TextField,
   MenuItem,
   Button,
@@ -19,14 +17,15 @@ import {
   Chip,
   TablePagination,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import MoreVertTwoToneIcon from "@mui/icons-material/MoreVertTwoTone";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import NoShowReasonDialog from "./NoshowReasonDialog";
 import { useSnackbar } from "notistack";
+import { authHeader } from "../../../utils/authHeader";
 
 const TableWrapper = styled(Table)(() => ``);
 
@@ -34,7 +33,7 @@ interface ReservationSlot {
   id: number;
   date: string;
   approve_status: string;
-  created_at?: string;
+  createdAt?: string;
   reservation: {
     student_id: string;
     student_name: string;
@@ -68,11 +67,11 @@ function VerifyPage({
 }: {
   onDataFetched: (rows: ReservationSlot[]) => void;
 }) {
-  const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
   const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
   const [rows, setRows] = useState<ReservationSlot[]>([]);
+  const [loading, setLoading] = useState(false);
   const [fromDate, setFromDate] = useState<Dayjs | null>(
     dayjs().subtract(6, "day")
   );
@@ -90,6 +89,7 @@ function VerifyPage({
   const [submitting, setSubmitting] = useState(false);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       let url = `${baseAPIUrl}/api/admin/reservation-slots/kpis?from=${fromDate?.format(
         "YYYY-MM-DD"
@@ -98,13 +98,16 @@ function VerifyPage({
       if (courtType) url += `&courtType=${courtType}`;
       url += `&approve_status=approved`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, { headers: authHeader() });
       const data = await res.json();
       setRows(data.data || []);
       onDataFetched(data.data || []);
       setPage(0);
     } catch (err) {
       console.error("Error fetching KPI data:", err);
+      enqueueSnackbar("❌ ไม่สามารถดึงรายการได้", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -119,7 +122,7 @@ function VerifyPage({
         `${baseAPIUrl}/api/admin/reservation-slots/${id}/verifynoshow`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeader() },
           body: JSON.stringify({ reason }),
         }
       );
@@ -141,7 +144,7 @@ function VerifyPage({
         `${baseAPIUrl}/api/admin/reservation-slots/${id}/reject`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeader() },
           body: JSON.stringify({ reason }),
         }
       );
@@ -160,7 +163,7 @@ function VerifyPage({
     try {
       const res = await fetch(
         `${baseAPIUrl}/api/admin/reservation-slots/${id}/verifysuccess`,
-        { method: "PATCH" }
+        { method: "PATCH", headers: authHeader() }
       );
       if (!res.ok) throw new Error("Success failed");
       enqueueSnackbar("บันทึกการใช้งานสำเร็จ ✅", { variant: "success" });
@@ -173,22 +176,11 @@ function VerifyPage({
 
   return (
     <Card>
-      <Box
-        px={3}
-        py={2}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Box>
-          <Typography variant="h4">รายการรอยืนยันตัวตน</Typography>
-          <Typography variant="subtitle2">
-            ค้นหาและยืนยันการเข้าใช้สนามตามช่วงวันที่
-          </Typography>
-        </Box>
-        <IconButton color="primary">
-          <MoreVertTwoToneIcon />
-        </IconButton>
+      <Box px={3} py={2}>
+        <Typography variant="h4">รายการรอยืนยันตัวตน</Typography>
+        <Typography variant="subtitle2">
+          ค้นหาและยืนยันการเข้าใช้สนามตามช่วงวันที่
+        </Typography>
       </Box>
       <Divider />
 
@@ -262,7 +254,22 @@ function VerifyPage({
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <CircularProgress size={28} />
+                  </TableCell>
+                </TableRow>
+              ) : rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <Typography color="text.secondary">
+                      ไม่มีรายการรอยืนยันตัวตนในช่วงวันที่นี้
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                rows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
                   <TableRow key={row.id} hover>
@@ -281,8 +288,8 @@ function VerifyPage({
                       />
                     </TableCell>
                     <TableCell>
-                      {row.created_at
-                        ? dayjs(row.created_at).format("DD/MM/YYYY HH:mm")
+                      {row.createdAt
+                        ? dayjs(row.createdAt).format("DD/MM/YYYY HH:mm")
                         : "-"}
                     </TableCell>
                     <TableCell>
@@ -333,7 +340,8 @@ function VerifyPage({
                       </Stack>
                     </TableCell>
                   </TableRow>
-                ))}
+                ))
+              )}
             </TableBody>
           </TableWrapper>
         </TableContainer>

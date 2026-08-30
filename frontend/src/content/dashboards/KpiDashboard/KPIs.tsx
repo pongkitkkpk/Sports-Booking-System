@@ -15,11 +15,13 @@ import {
   Grid,
   TablePagination,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import { authHeader } from "../../../utils/authHeader";
 
 const COURT_TYPES = [
   { value: "BADMINTON", label: "แบดมินตัน" },
@@ -40,6 +42,7 @@ const STATUS_CHIP: Record<
   cancel: { label: "ยกเลิก", color: "error", variant: "outlined" },
   approved: { label: "อนุมัติแล้ว", color: "success", variant: "filled" },
   pending: { label: "รออนุมัติ", color: "warning", variant: "outlined" },
+  rejected: { label: "ถูกปฏิเสธ", color: "error", variant: "filled" },
   success: { label: "สำเร็จ", color: "success", variant: "outlined" },
   no_show: { label: "ไม่มาใช้บริการ", color: "error", variant: "filled" },
   close: { label: "ปิด", color: "default", variant: "filled" },
@@ -75,6 +78,7 @@ function Block2({
 }) {
   const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
   const [rows, setRows] = useState<ReservationSlot[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [fromDate, setFromDate] = useState<Dayjs | null>(
     dayjs().subtract(6, "day")
@@ -87,6 +91,7 @@ function Block2({
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       let url = `${baseAPIUrl}/api/admin/reservation-slots/kpis?from=${fromDate?.format(
         "YYYY-MM-DD"
@@ -95,14 +100,15 @@ function Block2({
       if (courtType) url += `&courtType=${courtType}`;
       if (approveStatus) url += `&approve_status=${approveStatus}`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, { headers: authHeader() });
       const data = await res.json();
       setRows(data.data || []);
       onDataFetched(data.data || []);
       setPage(0);
-      console.log(data.data);
     } catch (err) {
       console.error("Error fetching KPI data:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -211,7 +217,14 @@ function Block2({
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.length === 0 && (
+              {loading && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <CircularProgress size={28} />
+                  </TableCell>
+                </TableRow>
+              )}
+              {!loading && rows.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
                     <Typography color="text.secondary">
@@ -220,7 +233,8 @@ function Block2({
                   </TableCell>
                 </TableRow>
               )}
-              {rows
+              {!loading &&
+                rows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const status =

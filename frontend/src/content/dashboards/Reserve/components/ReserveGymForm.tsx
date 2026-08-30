@@ -15,6 +15,7 @@ import {
   Typography,
   styled,
   TextField,
+  MenuItem,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -35,6 +36,14 @@ interface Props {
 }
 
 const MAX_DEFAULT = 30;
+
+const ICIT_OPTIONS = [
+  "ICIT คณะเทคโนโลยีอุตสาหกรรม",
+  "FIT คณะเทคโนโลยีสารสนเทศ",
+  "FTE คณะวิศวกรรมศาสตร์",
+  "FIB คณะบริหารธุรกิจ",
+  "อื่น ๆ",
+];
 
 type SlotStatus =
   | "available"
@@ -198,12 +207,15 @@ function ReserveGymForm({
 
   const selectedCount = Object.keys(selected).length;
 
-  const [studentName, setStudentName] = useState("รอเชื่อม API typeA");
-  const [studentId, setStudentId] = useState("65010001");
-  const [purpose, setPurpose] = useState("1");
-  const [icit, setIcit] = useState("CIT");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [icit, setIcit] = useState("");
   const handleSubmit = async () => {
     if (!selectedCount) return;
+    if (!studentId || !studentName || !icit) {
+      enqueueSnackbar("❗ กรุณากรอกข้อมูลให้ครบถ้วน", { variant: "warning" });
+      return;
+    }
 
     try {
       const payload = {
@@ -468,6 +480,40 @@ function ReserveGymForm({
             <Typography variant="caption" color="text.secondary">
               อัปเดตล่าสุด {lastUpdated} • ตารางรีเฟรชทุก 2 นาที
             </Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="รหัสประจำตัวนักศึกษา"
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="ชื่อ-นามสกุล"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              select
+              fullWidth
+              label="สังกัด"
+              value={icit}
+              onChange={(e) => setIcit(e.target.value)}
+            >
+              {ICIT_OPTIONS.map((opt) => (
+                <MenuItem key={opt} value={opt}>
+                  {opt}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Grid>
 

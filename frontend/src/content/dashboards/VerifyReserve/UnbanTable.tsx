@@ -14,12 +14,13 @@ import {
   Grid,
   TextField,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import CancelReasonDialog from "./CancelReasonDialog";
 import dayjs from "dayjs";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { authHeader } from "../../../utils/authHeader";
 interface ReservationSlot {
   id: number;
   date: string;
@@ -33,6 +34,7 @@ function UnbanTable() {
   const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
   const [rows, setRows] = useState<ReservationSlot[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [courtType, setCourtType] = useState<string>("");
   const [fromDate, setFromDate] = useState<Dayjs | null>(
@@ -40,18 +42,23 @@ function UnbanTable() {
   );
   const [toDate, setToDate] = useState<Dayjs | null>(dayjs());
   const fetchPending = async () => {
-    const from = fromDate ? fromDate.format("YYYY-MM-DD") : "";
-    const to = toDate ? toDate.format("YYYY-MM-DD") : "";
+    setLoading(true);
+    try {
+      const from = fromDate ? fromDate.format("YYYY-MM-DD") : "";
+      const to = toDate ? toDate.format("YYYY-MM-DD") : "";
 
-    let url = `${baseAPIUrl}/api/admin/reservation-slots/banned`;
-    if (from) url += `?from=${from}`;
-    if (to) url += `&to=${to}`;
-    if (courtType) url += `&courtType=${courtType}`;
+      let url = `${baseAPIUrl}/api/admin/reservation-slots/banned`;
+      if (from) url += `?from=${from}`;
+      if (to) url += `&to=${to}`;
+      if (courtType) url += `&courtType=${courtType}`;
 
-    const res = await fetch(url);
-    const data = await res.json();
-    setRows(data || []);
-    setSelectedIds([]);
+      const res = await fetch(url, { headers: authHeader() });
+      const data = await res.json();
+      setRows(data || []);
+      setSelectedIds([]);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     fetchPending();
@@ -60,6 +67,7 @@ function UnbanTable() {
   const handleUnban = async (id: number) => {
     await fetch(`${baseAPIUrl}/api/admin/reservation-slots/${id}/unban`, {
       method: "PATCH",
+      headers: authHeader(),
     });
     fetchPending();
   };
@@ -69,32 +77,12 @@ function UnbanTable() {
       selectedIds.map((id) =>
         fetch(`${baseAPIUrl}/api/admin/reservation-slots/${id}/unban`, {
           method: "PATCH",
+          headers: authHeader(),
         })
       )
     );
     fetchPending();
   };
-
-  // ✅ เผื่อมีการบอกให้ไม่unban
-  // const handleSubmitCancel = async (reason: string) => {
-  //   try {
-  //     setSubmittingCancel(true);
-  //     await Promise.all(
-  //       selectedIds.map((id) =>
-  //         fetch(`${baseAPIUrl}/api/admin/reservation-slots/${id}/reject`, {
-  //           method: "PATCH",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({ reason }),
-  //         })
-  //       )
-  //     );
-  //     setOpenCancel(false);
-  //     setSelectedIds([]);
-  //     fetchPending();
-  //   } finally {
-  //     setSubmittingCancel(false);
-  //   }
-  // };
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -114,9 +102,9 @@ function UnbanTable() {
     <>
       <Card>
         <Box p={3}>
-          <Typography variant="h4">Pending Approvals</Typography>
+          <Typography variant="h4">รายชื่อผู้ถูกระงับสิทธิ์</Typography>
           <Typography variant="subtitle2">
-            Manage reservations waiting for admin approval
+            ค้นหาและยกเลิกการระงับสิทธิ์การใช้สนามของนักศึกษา
           </Typography>
         </Box>
 
@@ -186,14 +174,31 @@ function UnbanTable() {
                   />
                 </TableCell>
                 <TableCell>#</TableCell>
-                <TableCell>Student</TableCell>
-                <TableCell>Court</TableCell>
-                <TableCell>Usage Time</TableCell>
-                <TableCell align="center">Actions</TableCell>
+                <TableCell>นักศึกษา</TableCell>
+                <TableCell>สนาม</TableCell>
+                <TableCell>เวลาที่ใช้งาน</TableCell>
+                <TableCell align="center">การดำเนินการ</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row: any, index) =>
+              {loading && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <CircularProgress size={28} />
+                  </TableCell>
+                </TableRow>
+              )}
+              {!loading && rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <Typography color="text.secondary">
+                      ไม่มีผู้ถูกระงับสิทธิ์ในช่วงวันที่นี้
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!loading &&
+                rows.map((row: any, index) =>
                 row.slots.map((slot: any, idx: number) => (
                   <TableRow key={`${row.id}-${slot.id}`} hover>
                     <TableCell padding="checkbox">
@@ -222,7 +227,7 @@ function UnbanTable() {
                         size="small"
                         onClick={() => handleUnban(row.id)}
                       >
-                        Unban
+                        ยกเลิกการระงับสิทธิ์
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -241,31 +246,12 @@ function UnbanTable() {
                 color="success"
                 onClick={handleBulkUnban}
               >
-                Unban Selected ({selectedIds.length})
+                ยกเลิกการระงับสิทธิ์ที่เลือก ({selectedIds.length})
               </Button>
-              {/* <Button
-                variant="outlined"
-                color="error"
-                onClick={() => setOpenCancel(true)}
-              >
-                Reject Selected ({selectedIds.length})
-              </Button> */}
             </Stack>
           </Box>
         )}
       </Card>
-
-      {/* ✅ Popup Dialog สำหรับ Bulk Reject */}
-      {/* <CancelReasonDialog
-        open={openCancel}
-        slot={null}
-        onClose={() => {
-          setOpenCancel(false);
-          setSelectedIds([]);
-        }}
-        onSubmit={handleSubmitCancel}
-        submitting={submittingCancel}
-      /> */}
     </>
   );
 }

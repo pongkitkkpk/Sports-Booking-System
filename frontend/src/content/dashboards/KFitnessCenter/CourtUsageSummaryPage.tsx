@@ -9,51 +9,43 @@ import {
   TableBody,
   Table,
   TableContainer,
-  IconButton,
   styled,
   TextField,
   Button,
   Grid,
   TablePagination,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import MoreVertTwoToneIcon from "@mui/icons-material/MoreVertTwoTone";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import { useSnackbar } from "notistack";
 import ShowDialog from "./ShowDialog";
 
 const TableWrapper = styled(Table)(() => ``);
 
-interface ReservationSlot {
-  id: number;
+// รูปร่างจริงของแถวที่ getUsageSummaryByCourtAndRange (backend) ส่งกลับมา
+// เป็นผล GROUP_CONCAT ต่อช่วงเวลา ไม่ใช่ reservation slot entity ตรง ๆ
+interface UsageSummaryRow {
   date: string;
-  approve_status: string;
-  created_at?: string;
-  reservation: {
-    student_id: string;
-    student_name: string;
-    icit: string;
-    bookingStatus: { description: string };
-  };
-  court: {
-    name: string;
-    location: string;
-  };
-  timeSlot: {
-    start_time: string;
-    end_time: string;
-  };
-  reason?: string;
+  time_slot_id: number;
+  time_range: string;
+  court_id: number;
+  court_name: string;
+  total_users: number;
+  user_list: string;
 }
 
 function CourtUsageSummaryPage({
   onDataFetched,
 }: {
-  onDataFetched: (rows: ReservationSlot[]) => void;
+  onDataFetched: (rows: UsageSummaryRow[]) => void;
 }) {
   const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
-  const [rows, setRows] = useState<ReservationSlot[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const [rows, setRows] = useState<UsageSummaryRow[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [fromDate, setFromDate] = useState<Dayjs | null>(
     dayjs().subtract(6, "day")
@@ -64,11 +56,14 @@ function CourtUsageSummaryPage({
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [openCancel, setOpenCancel] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  const [selectedSlot, setSelectedSlot] = useState<UsageSummaryRow | null>(
+    null
+  );
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      let url = `${baseAPIUrl}/api/reservation-slots/usage-summary?courtId=13&start=${fromDate?.format(
+      const url = `${baseAPIUrl}/api/reservation-slots/usage-summary?courtId=13&start=${fromDate?.format(
         "YYYY-MM-DD"
       )}&end=${toDate?.format("YYYY-MM-DD")}`;
 
@@ -77,9 +72,13 @@ function CourtUsageSummaryPage({
       setRows(data || []);
       onDataFetched(data || []);
       setPage(0);
-      console.log(data);
     } catch (err) {
-      console.error("Error fetching KPI data:", err);
+      console.error("Error fetching usage summary", err);
+      enqueueSnackbar("❌ ไม่สามารถดึงข้อมูลสรุปการใช้งานได้", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,8 +86,7 @@ function CourtUsageSummaryPage({
     fetchData();
   }, []);
 
-  const handleshowdata = (slot: any) => {
-    console.log("test", slot);
+  const handleshowdata = (slot: UsageSummaryRow) => {
     setSelectedSlot(slot);
     setOpenCancel(true);
   };
@@ -96,22 +94,11 @@ function CourtUsageSummaryPage({
   return (
     <>
       <Card>
-        <Box
-          px={3}
-          py={2}
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Box>
-            <Typography variant="h4">สรุปการใช้งานยิมออกกำลังกาย</Typography>
-            <Typography variant="subtitle2">
-              ค้นหาจำนวนผู้ใช้บริการตามช่วงวันที่
-            </Typography>
-          </Box>
-          <IconButton color="primary">
-            <MoreVertTwoToneIcon />
-          </IconButton>
+        <Box px={3} py={2}>
+          <Typography variant="h4">สรุปการใช้งานยิมออกกำลังกาย</Typography>
+          <Typography variant="subtitle2">
+            ค้นหาจำนวนผู้ใช้บริการตามช่วงวันที่
+          </Typography>
         </Box>
         <Divider />
 
@@ -162,28 +149,47 @@ function CourtUsageSummaryPage({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <TableRow key={`${row.date}-${row.time_slot_id}`} hover>
-                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                      <TableCell>
-                        {dayjs(row.date).format("DD/MM/YYYY")}
-                      </TableCell>
-                      <TableCell>{row.time_range}</TableCell>
-                      <TableCell>{row.total_users}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          onClick={() => handleshowdata(row)}
-                        >
-                          ดูรายชื่อ
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center" sx={{ py: 5 }}>
+                      <CircularProgress size={28} />
+                    </TableCell>
+                  </TableRow>
+                ) : rows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center" sx={{ py: 5 }}>
+                      <Typography color="text.secondary">
+                        ไม่มีข้อมูลการใช้งานในช่วงวันที่นี้
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  rows
+                    .slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
+                    .map((row, index) => (
+                      <TableRow key={`${row.date}-${row.time_slot_id}`} hover>
+                        <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                        <TableCell>
+                          {dayjs(row.date).format("DD/MM/YYYY")}
+                        </TableCell>
+                        <TableCell>{row.time_range}</TableCell>
+                        <TableCell>{row.total_users}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            size="small"
+                            onClick={() => handleshowdata(row)}
+                          >
+                            ดูรายชื่อ
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
               </TableBody>
             </TableWrapper>
           </TableContainer>

@@ -22,7 +22,7 @@ export const courtData: Record<
   volleyball: {
     name: "สนามวอลเลย์บอล",
     imageUrl:
-      "https://images.pexels.com/photos/1092867/pexels-photo-1092867.jpeg",
+      "https://images.pexels.com/photos/6203560/pexels-photo-6203560.jpeg",
     description: "สนามวอลเลย์บอลพื้นไม้มาตรฐาน ชั้น 7 อาคาร 40 ปี",
     capacity: 1,
     unit: "สนาม",
@@ -40,7 +40,7 @@ export const courtData: Record<
   futsal: {
     name: "สนามฟุตซอล",
     imageUrl:
-      "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg",
+      "https://images.pexels.com/photos/3846652/pexels-photo-3846652.jpeg",
     description:
       "สนามฟุตซอลในร่ม ชั้น 3 และชั้น 12 อาคาร 40 ปี เปิดบริการ 08:00 - 21:00 น.",
     capacity: 2,
@@ -51,7 +51,7 @@ export const courtData: Record<
   boxing: {
     name: "สนามมวย",
     imageUrl:
-      "https://images.pexels.com/photos/4761796/pexels-photo-4761796.jpeg",
+      "https://images.pexels.com/photos/8611244/pexels-photo-8611244.jpeg",
     description: "เวทีมวยมาตรฐานสำหรับฝึกซ้อม ชั้น 12 อาคาร 40 ปี",
     capacity: 1,
     unit: "สนาม",
@@ -60,7 +60,7 @@ export const courtData: Record<
   judo: {
     name: "สนามยูโด",
     imageUrl:
-      "https://images.pexels.com/photos/9324301/pexels-photo-9324301.jpeg",
+      "https://images.pexels.com/photos/6253172/pexels-photo-6253172.jpeg",
     description: "ลานยูโดพื้น tatami ชั้น 12 อาคาร 40 ปี",
     capacity: 1,
     unit: "สนาม",

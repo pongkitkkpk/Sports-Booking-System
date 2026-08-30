@@ -24,9 +24,9 @@ function ReserveDetail() {
     );
   }
 
-  // if (courtType === "gym") {
-  //   return <ReserveGymForm courtType="gym" courtInfo={court} />;
-  // }
+  if (courtType === "gym") {
+    return <ReserveGymForm courtType="gym" courtInfo={court} />;
+  }
 
   return (
     <ReserveForm

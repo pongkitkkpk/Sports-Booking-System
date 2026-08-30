@@ -48,6 +48,11 @@ function CloseByDateRange({ courtName, courtCount, courtIdStart }: Props) {
       return;
     }
 
+    if (!purpose) {
+      setError("กรุณาเลือกจุดประสงค์ในการปิดสนาม");
+      return;
+    }
+
     const results: string[] = [];
     const errors: string[] = [];
 
@@ -60,7 +65,7 @@ function CloseByDateRange({ courtName, courtCount, courtIdStart }: Props) {
             start_date: startDate.format("YYYY-MM-DD"),
             end_date: endDate.format("YYYY-MM-DD"),
             reason: "ปิดสนามทั้งวันโดยผู้ดูแลระบบ",
-            booking_status_id: purpose,
+            booking_status_id: parseInt(purpose, 10),
           }
         );
 
@@ -177,7 +182,12 @@ function CloseByDateRange({ courtName, courtCount, courtIdStart }: Props) {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={selectedCourts.length === 0 || !startDate || !endDate}
+            disabled={
+              selectedCourts.length === 0 ||
+              !startDate ||
+              !endDate ||
+              !purpose
+            }
           >
             🚨 ยืนยันปิดสนามตามช่วงวัน
           </Button>

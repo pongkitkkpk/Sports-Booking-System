@@ -1,22 +1,18 @@
 import { useRef, useState } from 'react';
 import useAuth from '../../../../hooks/useAuth';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Avatar,
   Box,
   Button,
   Divider,
-  MenuList,
   alpha,
   IconButton,
-  MenuItem,
-  ListItemText,
   Popover,
   Typography,
   styled
 } from '@mui/material';
-import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
 
 const UserBoxButton = styled(IconButton)(
@@ -38,32 +34,6 @@ const UserAvatar = styled(Avatar)(
         height: 90%;
         width: 90%;
         border-radius: ${theme.general.borderRadiusLg};
-`
-);
-
-const MenuListWrapperPrimary = styled(MenuList)(
-  ({ theme }) => `
-  padding: ${theme.spacing(2)};
-
-  & .MuiMenuItem-root {
-      border-radius: 50px;
-      padding: ${theme.spacing(1, 1, 1, 2.5)};
-      min-width: 200px;
-      margin-bottom: 2px;
-      position: relative;
-      color: ${theme.colors.alpha.black[100]};
-
-      &.Mui-selected,
-      &:hover,
-      &.MuiButtonBase-root:active {
-          background: ${theme.colors.primary.lighter};
-          color: ${theme.colors.primary.main};
-      }
-
-      &:last-child {
-          margin-bottom: 0;
-      }
-    }
 `
 );
 
@@ -159,20 +129,6 @@ function HeaderUserbox() {
             mb: 0
           }}
         />
-        <MenuListWrapperPrimary disablePadding>
-          <MenuItem
-            component={RouterLink}
-            to="/extended-sidebar/management/users/single/1"
-            onClick={handleClose}
-          >
-            <AccountBoxTwoToneIcon fontSize="small" sx={{ mr: 1 }} />
-            <ListItemText
-              primaryTypographyProps={{ variant: 'h5' }}
-              primary="โปรไฟล์ของฉัน"
-            />
-          </MenuItem>
-        </MenuListWrapperPrimary>
-        <Divider />
         <Box m={1}>
           <Button color="primary" fullWidth onClick={handleLogout}>
             <LockOpenTwoToneIcon

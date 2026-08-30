@@ -93,8 +93,12 @@ const userFromToken = (token: string): User => {
 const setSession = (accessToken: string | null): void => {
   if (accessToken) {
     localStorage.setItem('accessToken', accessToken);
+    // ทุกหน้าที่ยิง axios ตรง ๆ (ไม่ผ่าน instance กลาง) ต้องได้ header นี้ด้วย
+    // เพื่อให้ endpoint ฝั่ง backend ที่ต้อง login (เช่น admin/reservation-slots) ใช้งานได้
+    axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
     localStorage.removeItem('accessToken');
+    delete axios.defaults.headers.common.Authorization;
   }
 };
 
@@ -147,6 +151,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       const accessToken = window.localStorage.getItem('accessToken');
 
       if (accessToken && isTokenValid(accessToken)) {
+        axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         dispatch({
           type: 'INITIALIZE',
           payload: {

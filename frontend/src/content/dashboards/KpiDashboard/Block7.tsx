@@ -26,6 +26,7 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
     {
       approved: number;
       pending: number;
+      rejected: number;
       cancel: number;
       success: number;
       noshow: number;
@@ -39,6 +40,7 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
       grouped[r.date] = {
         approved: 0,
         pending: 0,
+        rejected: 0,
         cancel: 0,
         success: 0,
         noshow: 0,
@@ -53,6 +55,9 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
         break;
       case "pending":
         grouped[r.date].pending++;
+        break;
+      case "rejected":
+        grouped[r.date].rejected++;
         break;
       case "cancel":
         grouped[r.date].cancel++;
@@ -76,6 +81,7 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
 
   const approvedData = categories.map((d) => grouped[d].approved);
   const pendingData = categories.map((d) => grouped[d].pending);
+  const rejectedData = categories.map((d) => grouped[d].rejected);
   const cancelData = categories.map((d) => grouped[d].cancel);
   const successData = categories.map((d) => grouped[d].success);
   const noshowData = categories.map((d) => grouped[d].noshow);
@@ -112,7 +118,8 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
       theme.palette.success.dark, // Success
       theme.palette.success.main, // Approved
       theme.palette.warning.main, // Pending
-      theme.palette.error.main, // Cancel
+      theme.palette.error.main, // Rejected
+      theme.palette.error.light, // Cancel
       theme.palette.error.dark, // No Show
       theme.palette.grey[600], // Close
       theme.palette.info.main, // walkin
@@ -127,6 +134,7 @@ function Block7({ rows }: { rows: ReservationSlot[] }) {
     { name: "สำเร็จ", data: successData },
     { name: "อนุมัติแล้ว", data: approvedData },
     { name: "รออนุมัติ", data: pendingData },
+    { name: "ถูกปฏิเสธ", data: rejectedData },
     { name: "ยกเลิก", data: cancelData },
     { name: "ไม่มาใช้บริการ", data: noshowData },
     { name: "ปิด", data: closeData },

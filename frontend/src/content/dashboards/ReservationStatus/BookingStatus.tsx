@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Typography,
@@ -16,15 +16,62 @@ import {
   Avatar,
   Pagination,
   CardActions,
+  TextField,
+  CircularProgress,
   styled,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import CheckTwoToneIcon from "@mui/icons-material/CheckTwoTone";
 import TimerTwoToneIcon from "@mui/icons-material/TimerTwoTone";
+import BlockTwoToneIcon from "@mui/icons-material/BlockTwoTone";
 import AccessTimeTwoToneIcon from "@mui/icons-material/AccessTimeTwoTone";
 import dayjs from "dayjs";
 import axios from "axios";
 import CancelReasonDialog from "./CancelReasonDialog";
+
+// สถานะเดียวกับที่ใช้ใน KpiDashboard/KPIs.tsx เพื่อให้คำและสีตรงกันทั้งระบบ
+const STATUS_CHIP: Record<
+  string,
+  {
+    label: string;
+    color: "error" | "success" | "warning" | "default" | "info";
+  }
+> = {
+  pending: { label: "รอดำเนินการ", color: "warning" },
+  approved: { label: "อนุมัติแล้ว", color: "success" },
+  success: { label: "สำเร็จ", color: "success" },
+  rejected: { label: "ถูกปฏิเสธ", color: "error" },
+  no_show: { label: "ไม่มาใช้บริการ", color: "error" },
+  close: { label: "ปิดสนาม", color: "default" },
+  "walk-in": { label: "Walk-in", color: "info" },
+};
+
+const STATUS_ICON: Record<string, JSX.Element> = {
+  warning: <TimerTwoToneIcon fontSize="small" />,
+  error: <BlockTwoToneIcon fontSize="small" />,
+  success: <CheckTwoToneIcon fontSize="small" />,
+};
+
+// สถานะที่ยังยกเลิกได้ด้วยตัวเอง — สถานะอื่น (สำเร็จ/ไม่มา/ถูกปฏิเสธ/ปิดสนาม) จบไปแล้วหรือไม่ใช่สิ่งที่ผู้ใช้ยกเลิกเองได้
+const CANCELABLE_STATUSES = new Set(["pending", "approved"]);
+
+// ลำดับความสำคัญของสถานะ เพื่อเลือกสถานะที่ควรเด่นที่สุดมาแสดงบนป้ายรวมของการจอง
+const STATUS_PRIORITY = [
+  "rejected",
+  "no_show",
+  "pending",
+  "walk-in",
+  "approved",
+  "success",
+  "close",
+];
+
+const worstStatus = (statuses: string[]): string => {
+  for (const s of STATUS_PRIORITY) {
+    if (statuses.includes(s)) return s;
+  }
+  return statuses[0] || "pending";
+};
 
 const TabsContainerWrapper = styled(CardContent)(
   ({ theme }) => `
@@ -42,6 +89,7 @@ const CourtAvatar = styled(Avatar)(
 );
 
 const PAGE_SIZE = 5;
+const STUDENT_ID_STORAGE_KEY = "kmutnb.lastStudentId";
 
 const getChipColor = (
   description: string
@@ -70,8 +118,12 @@ const getChipColor = (
 };
 
 function BookingStatus() {
-  const student_id = "65010001";
+  const [studentId, setStudentId] = useState(
+    () => localStorage.getItem(STUDENT_ID_STORAGE_KEY) || ""
+  );
+  const [studentIdInput, setStudentIdInput] = useState(studentId);
   const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const [openCancel, setOpenCancel] = useState(false);
@@ -80,21 +132,37 @@ function BookingStatus() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const fetchBookings = async () => {
+  const fetchBookings = async (id: string) => {
+    if (!id) {
+      setBookings([]);
+      return;
+    }
+    setLoading(true);
     try {
       // ✅ ดึงเฉพาะ active (default API จะตัด cancel ออกให้เอง)
       const res = await axios.get(
-        `${baseUrl}/api/reservations/by-student/${student_id}`
+        `${baseUrl}/api/reservations/by-student/${id}`
       );
       setBookings(res.data);
     } catch (error) {
       console.error("Failed to fetch booking status", error);
+      enqueueSnackbar("❌ ไม่สามารถดึงรายการจองได้", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchBookings();
-  }, []);
+    fetchBookings(studentId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [studentId]);
+
+  const handleLookup = () => {
+    const trimmed = studentIdInput.trim();
+    if (!trimmed) return;
+    localStorage.setItem(STUDENT_ID_STORAGE_KEY, trimmed);
+    setStudentId(trimmed);
+  };
 
   const [currentTab, setCurrentTab] = useState<string>("all");
   const [page, setPage] = useState(1);
@@ -105,7 +173,7 @@ function BookingStatus() {
     { value: "upcoming", label: "กำลังจะถึง" },
   ];
 
-  const handleTabsChange = (_event: ChangeEvent<{}>, value: string): void => {
+  const handleTabsChange = (_event: SyntheticEvent, value: string): void => {
     setCurrentTab(value);
     setPage(1);
   };
@@ -118,7 +186,9 @@ function BookingStatus() {
     const slotWithStatus = {
       ...(curr.timeSlot || {}), // start, end, id (ของ master timeslot)
       id: curr?.timeSlot?.id, // เผื่อ backend ไม่ส่ง id ใน timeSlot
-      status: curr.approve_status, // ✅ สถานะจริงของ reservation slot (e.g., 'cancel', 'approved', 'pending')
+      // backend (reservations.service.ts findByStudentId) ส่งฟิลด์ชื่อ `status`
+      // ไม่ใช่ `approve_status` — ของเดิมอ่านผิดฟิลด์ทำให้ค่าเป็น undefined เสมอ
+      status: curr.status, // ✅ สถานะจริงของ reservation slot (e.g., 'cancel', 'approved', 'pending')
       reservationId: curr.id, // ใช้ตอนยิง cancel
       date: curr.date,
     };
@@ -128,7 +198,6 @@ function BookingStatus() {
         id: curr.id, // reservation.id (ใช้ตอน enrich)
         court: curr.court,
         date: curr.date,
-        status: curr.status, // ถ้ามี (เช่น overall reservation status)
         booking_status: curr.booking_status_id?.description || "ไม่ระบุ",
         timeSlots: [slotWithStatus],
       };
@@ -138,9 +207,19 @@ function BookingStatus() {
     return acc;
   }, {} as Record<string, any>);
 
-  const groupedList = Object.values(groupedBookings).filter((item: any) =>
-    item.timeSlots.some((slot: any) => slot.status !== "cancel")
-  );
+  const groupedList = Object.values(groupedBookings)
+    .filter((item: any) =>
+      item.timeSlots.some((slot: any) => slot.status !== "cancel")
+    )
+    .map((item: any) => ({
+      ...item,
+      // ✅ คำนวณสถานะรวมจาก slot ที่ยังไม่ถูกยกเลิกทุกครั้งที่ render แทนการอ่านจาก slot แรกเพียงตัวเดียว
+      status: worstStatus(
+        item.timeSlots
+          .filter((slot: any) => slot.status !== "cancel")
+          .map((slot: any) => slot.status)
+      ),
+    }));
 
   const filteredList = useMemo(() => {
     const today = dayjs().startOf("day");
@@ -172,7 +251,7 @@ function BookingStatus() {
         if (isSameReservation && isSameSlot && isSameDate) {
           return {
             ...b,
-            approve_status: "cancel", // สำคัญสุด
+            status: "cancel", // สำคัญสุด — ต้องตรงกับฟิลด์ที่ backend ส่งมาจริง
           };
         }
         return b;
@@ -206,7 +285,7 @@ function BookingStatus() {
       enqueueSnackbar(" ยกเลิกการจองเรียบร้อย", { variant: "success" });
       setOpenCancel(false);
       setSelectedSlot(null);
-      // ถ้าต้องการ sync จริง ๆ ค่อยเรียก: await fetchBookings();
+      // ถ้าต้องการ sync จริง ๆ ค่อยเรียก: await fetchBookings(studentId);
     } catch (err) {
       setBookings(prevState); // rollback
       enqueueSnackbar("❌ เกิดข้อผิดพลาดในการยกเลิก", { variant: "error" });
@@ -222,6 +301,30 @@ function BookingStatus() {
         title="รายการจองของฉัน"
         subheader={`ทั้งหมด ${filteredList.length} รายการ`}
       />
+      <Divider />
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 1.5,
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          size="small"
+          label="รหัสนักศึกษา"
+          value={studentIdInput}
+          onChange={(e) => setStudentIdInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleLookup();
+          }}
+          sx={{ minWidth: 220 }}
+        />
+        <Button variant="contained" onClick={handleLookup} disabled={loading}>
+          {loading ? "กำลังโหลด..." : "ดูรายการจอง"}
+        </Button>
+      </Box>
       <Divider />
       <TabsContainerWrapper>
         <Tabs
@@ -239,12 +342,20 @@ function BookingStatus() {
       </TabsContainerWrapper>
       <Divider />
 
-      {filteredList.length === 0 ? (
+      {loading ? (
+        <Box sx={{ textAlign: "center", py: 7, px: 3 }}>
+          <CircularProgress size={32} />
+        </Box>
+      ) : filteredList.length === 0 ? (
         <Box sx={{ textAlign: "center", py: 7, px: 3, color: "text.secondary" }}>
           <Typography sx={{ fontSize: "2rem", mb: 1, opacity: 0.5 }}>
             📭
           </Typography>
-          <Typography>ไม่มีรายการจองในหมวดนี้</Typography>
+          <Typography>
+            {studentId
+              ? "ไม่มีรายการจองในหมวดนี้"
+              : "กรอกรหัสนักศึกษาแล้วกด “ดูรายการจอง” เพื่อดูรายการของคุณ"}
+          </Typography>
         </Box>
       ) : (
         <>
@@ -287,17 +398,9 @@ function BookingStatus() {
                     <Chip
                       size="small"
                       variant="outlined"
-                      color={item.status === "pending" ? "warning" : "success"}
-                      icon={
-                        item.status === "pending" ? (
-                          <TimerTwoToneIcon fontSize="small" />
-                        ) : (
-                          <CheckTwoToneIcon fontSize="small" />
-                        )
-                      }
-                      label={
-                        item.status === "pending" ? "รอดำเนินการ" : "เสร็จสิ้น"
-                      }
+                      color={STATUS_CHIP[item.status]?.color || "default"}
+                      icon={STATUS_ICON[STATUS_CHIP[item.status]?.color]}
+                      label={STATUS_CHIP[item.status]?.label || item.status}
                     />
                   </Box>
 
@@ -325,36 +428,31 @@ function BookingStatus() {
                           itemStatus: item.status,
                           bookingStatus: item.booking_status,
                         };
+                        const statusInfo = STATUS_CHIP[slot.status];
+                        const timeLabel = `${String(slot.start).slice(
+                          0,
+                          5
+                        )} - ${String(slot.end).slice(0, 5)}`;
                         return (
                           <Chip
                             key={`${slot.id}-${i}`}
                             size="small"
                             variant="outlined"
+                            color={statusInfo?.color || "default"}
                             icon={<AccessTimeTwoToneIcon fontSize="small" />}
-                            label={`${String(slot.start).slice(
-                              0,
-                              5
-                            )} - ${String(slot.end).slice(0, 5)}`}
-                            onDelete={() => handleCancelBooking(enrichedSlot)}
+                            label={
+                              statusInfo
+                                ? `${timeLabel} · ${statusInfo.label}`
+                                : timeLabel
+                            }
+                            onDelete={
+                              CANCELABLE_STATUSES.has(slot.status)
+                                ? () => handleCancelBooking(enrichedSlot)
+                                : undefined
+                            }
                           />
                         );
                       })}
-                  </Box>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      mt: 2,
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      sx={{ whiteSpace: "nowrap" }}
-                    >
-                      รายละเอียด
-                    </Button>
                   </Box>
                 </ListItem>
 

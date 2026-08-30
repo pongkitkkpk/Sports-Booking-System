@@ -1,15 +1,12 @@
 import { useRef, useState } from 'react';
 import useAuth from '../../../../hooks/useAuth';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Avatar,
   Box,
   Button,
   Divider,
-  List,
-  ListItem,
-  ListItemText,
   Popover,
   IconButton,
   Typography,
@@ -17,7 +14,6 @@ import {
   useTheme
 } from '@mui/material';
 import UnfoldMoreTwoToneIcon from '@mui/icons-material/UnfoldMoreTwoTone';
-import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
 
 const MenuUserBox = styled(Box)(
@@ -45,7 +41,6 @@ function SidebarTopSection() {
   const theme = useTheme();
 
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, logout } = useAuth();
 
   const ref = useRef<any>(null);
@@ -145,20 +140,6 @@ function SidebarTopSection() {
           </UserBoxText>
         </MenuUserBox>
         <Divider sx={{ mb: 0 }} />
-        <List sx={{ p: 1 }} component="nav">
-          <ListItem
-            onClick={() => {
-              handleClose();
-            }}
-            button
-            to={`/${location.pathname.split('/')[1]}/management/users/single/1`}
-            component={NavLink}
-          >
-            <AccountBoxTwoToneIcon fontSize="small" />
-            <ListItemText primary="โปรไฟล์" />
-          </ListItem>
-        </List>
-        <Divider />
         <Box m={1}>
           <Button color="primary" fullWidth onClick={handleLogout}>
             <LockOpenTwoToneIcon sx={{ mr: 1 }} />

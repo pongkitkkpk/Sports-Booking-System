@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { bookingNav } from "../../../../config/bookingNav";
+import { useVisibleBookingNav } from "../../../../config/bookingNav";
 
 export interface MenuItem {
   link?: string;
@@ -16,11 +16,13 @@ export interface MenuItems {
   heading: string;
 }
 
-const menuItems: MenuItems[] = [
-  {
-    heading: "ระบบจองสนามกีฬา KMUTNB",
-    items: bookingNav,
-  },
-];
+export const useMenuItems = (): MenuItems[] => {
+  const bookingNav = useVisibleBookingNav();
 
-export default menuItems;
+  return [
+    {
+      heading: "ระบบจองสนามกีฬา KMUTNB",
+      items: bookingNav,
+    },
+  ];
+};

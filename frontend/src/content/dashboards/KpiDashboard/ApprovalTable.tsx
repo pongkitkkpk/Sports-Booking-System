@@ -20,6 +20,7 @@ import CancelReasonDialog from "./CancelReasonDialog";
 import dayjs from "dayjs";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { authHeader } from "../../../utils/authHeader";
 interface ReservationSlot {
   id: number;
   date: string;
@@ -50,7 +51,7 @@ function ApprovalTable() {
     if (to) url += `&to=${to}`;
     if (courtType) url += `&courtType=${courtType}`;
 
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: authHeader() });
     const data = await res.json();
     setRows(data.data || []);
     setSelectedIds([]);
@@ -62,6 +63,7 @@ function ApprovalTable() {
   const handleApprove = async (id: number) => {
     await fetch(`${baseAPIUrl}/api/admin/reservation-slots/${id}/approve`, {
       method: "PATCH",
+      headers: authHeader(),
     });
     fetchPending();
   };
@@ -71,6 +73,7 @@ function ApprovalTable() {
       selectedIds.map((id) =>
         fetch(`${baseAPIUrl}/api/admin/reservation-slots/${id}/approve`, {
           method: "PATCH",
+          headers: authHeader(),
         })
       )
     );
@@ -84,7 +87,7 @@ function ApprovalTable() {
         selectedIds.map((id) =>
           fetch(`${baseAPIUrl}/api/admin/reservation-slots/${id}/reject`, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...authHeader() },
             body: JSON.stringify({ reason }),
           })
         )

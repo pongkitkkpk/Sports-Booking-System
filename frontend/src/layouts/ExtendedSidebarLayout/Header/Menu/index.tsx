@@ -12,11 +12,12 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import KeyboardArrowDownTwoToneIcon from '@mui/icons-material/KeyboardArrowDownTwoTone';
-import { bookingNav } from '../../../../config/bookingNav';
+import { useVisibleBookingNav } from '../../../../config/bookingNav';
 
 function HeaderMenu() {
   const ref = useRef<any>(null);
   const [isOpen, setOpen] = useState<boolean>(false);
+  const bookingNav = useVisibleBookingNav();
 
   return (
     <>

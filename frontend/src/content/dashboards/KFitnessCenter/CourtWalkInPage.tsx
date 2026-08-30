@@ -5,6 +5,7 @@ import {
   Typography,
   Grid,
   TextField,
+  MenuItem,
   Button,
   Card,
   Divider,
@@ -27,15 +28,23 @@ interface WalkInRecord {
   time_range: string;
 }
 
+const ICIT_OPTIONS = [
+  "ICIT คณะเทคโนโลยีอุตสาหกรรม",
+  "FIT คณะเทคโนโลยีสารสนเทศ",
+  "FTE คณะวิศวกรรมศาสตร์",
+  "FIB คณะบริหารธุรกิจ",
+  "อื่น ๆ",
+];
+
 function CourtWalkInPage() {
   const { enqueueSnackbar } = useSnackbar();
   const [timeRange, setTimeRange] = useState("");
   const strnow = dayjs().format("DD-MM-YYYY");
 
   const [studentId, setStudentId] = useState("");
-  const [studentName, setStudentName] = useState("TestWalkin");
-  const [studentLastname, setStudentLastname] = useState("TestWalkin");
-  const [studentType, setStudentType] = useState("TestWalkinicit");
+  const [studentName, setStudentName] = useState("");
+  const [studentLastname, setStudentLastname] = useState("");
+  const [studentType, setStudentType] = useState("");
   const [walkInRows, setWalkInRows] = useState<WalkInRecord[]>([]);
   const studentIdRef = useRef<HTMLInputElement>(null);
   const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
@@ -100,7 +109,12 @@ function CourtWalkInPage() {
   };
 
   const handleSave = async () => {
-    if (!studentId || !studentName || !timeRange) return;
+    if (!studentId || !studentName || !studentType || !timeRange) {
+      enqueueSnackbar("❗ กรุณากรอกข้อมูลให้ครบถ้วน", { variant: "warning" });
+      return;
+    }
+
+    const fullName = `${studentName} ${studentLastname}`.trim();
 
     try {
       const startHour = parseInt(timeRange.split(":")[0], 10);
@@ -108,7 +122,7 @@ function CourtWalkInPage() {
 
       const payload = {
         student_id: studentId,
-        student_name: studentName,
+        student_name: fullName,
         icit: studentType,
         bookingStatusId: 7, // walk-in
         slots: [
@@ -133,6 +147,9 @@ function CourtWalkInPage() {
       };
       setWalkInRows((prev) => [...prev, newItem]);
       setStudentId("");
+      setStudentName("");
+      setStudentLastname("");
+      setStudentType("");
       studentIdRef.current?.focus();
 
       enqueueSnackbar("✅ บันทึกข้อมูล Walk-in สำเร็จ", { variant: "success" });
@@ -172,7 +189,12 @@ function CourtWalkInPage() {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="ชื่อ" value={studentName} disabled />
+            <TextField
+              fullWidth
+              label="ชื่อ"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+            />
           </Grid>
 
           <Grid item xs={12} sm={4}>
@@ -180,12 +202,24 @@ function CourtWalkInPage() {
               fullWidth
               label="นามสกุล"
               value={studentLastname}
-              disabled
+              onChange={(e) => setStudentLastname(e.target.value)}
             />
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="ประเภท" value={studentType} disabled />
+            <TextField
+              select
+              fullWidth
+              label="ประเภท"
+              value={studentType}
+              onChange={(e) => setStudentType(e.target.value)}
+            >
+              {ICIT_OPTIONS.map((opt) => (
+                <MenuItem key={opt} value={opt}>
+                  {opt}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
 
           <Grid item xs={12} sm={4}>
